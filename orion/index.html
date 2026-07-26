@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Konnark Orion Digital Booking Form — Fill and generate your booking form digitally.">
+  <title>Konnark Orion — Booking Form</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared/style.css">
+  <style>
+    .project-badge { background: #C9A96E; color: #0a0f1e; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; white-space: nowrap; display: inline-block; flex-shrink: 0; }
+    .project-name-header { font-family: 'Playfair Display', serif; color: #C9A96E; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; flex-shrink: 0; }
+    @media (max-width: 480px) {
+      .project-badge { display: none; }
+      .form-header-brand-wrap { gap: 0.4rem !important; }
+      .project-name-header { font-size: 0.95rem; }
+    }
+    .ocr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    @media (max-width: 400px) { .ocr-grid { grid-template-columns: 1fr; } }
+    .step-badge { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(201,169,110,0.15); border: 1.5px solid #C9A96E; color: #C9A96E; font-size: 0.8rem; font-weight: 700; margin-right: 0.5rem; flex-shrink: 0; }
+    .field-hint { font-size: 0.72rem; color: #8895aa; margin-top: 0.25rem; }
+    .comm-toggle-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(201,169,110,0.06); border-radius: 8px; margin-bottom: 1rem; cursor: pointer; }
+    .add-coapplicant-btn { width: 100%; padding: 0.75rem; border: 1.5px dashed rgba(201,169,110,0.4); border-radius: 8px; background: transparent; color: #C9A96E; font-size: 0.875rem; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; margin-top: 0.75rem; }
+    .add-coapplicant-btn:hover { border-color: #C9A96E; background: rgba(201,169,110,0.08); }
+    .coapplicant-section { border: 1px solid rgba(201,169,110,0.2); border-radius: 8px; padding: 1rem; margin-top: 0.75rem; background: rgba(201,169,110,0.03); }
+    .review-header { background: rgba(201,169,110,0.1); border-radius: 8px 8px 0 0; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(201,169,110,0.2); }
+    .clear-form-btn { font-size: 0.75rem; color: #e05c5c; background: none; border: none; cursor: pointer; font-family: 'Inter'; padding: 0; text-decoration: underline; }
+    .ocr-preview { width: 100%; max-height: 140px; object-fit: contain; border-radius: 6px; border: 1px solid rgba(201,169,110,0.3); display: none; margin: 0.5rem auto 0; background: rgba(0,0,0,0.2); }
+    .ocr-status { font-size: 0.75rem; margin-top: 0.5rem; min-height: 16px; text-align: center; }
+    .ocr-status.success { color: #5ce07a; }
+    .ocr-status.loading { color: #C9A96E; }
+    .ocr-status.error { color: #e05c5c; }
+    .ocr-status.warning { color: #e0a05c; }
+    input[type="file"] { display: none; }
+    .source-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .entity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .payment-mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .purpose-grid { display: flex; gap: 1.5rem; }
+    .review-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #C9A96E; margin-bottom: 0.5rem; font-weight: 600; }
+    .review-field { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid #1e2e4a; font-size: 0.875rem; gap: 1rem; }
+    .review-field-label { color: #8895aa; font-size: 0.75rem; flex-shrink: 0; }
+    .review-field-value { color: #F0EDE8; text-align: right; word-break: break-all; }
+  </style>
+</head>
+<body class="form-page">
+
+  <!-- Sticky Header -->
+  <header class="form-header">
+    <div class="form-header-brand-wrap" style="display:flex;align-items:center;gap:0.75rem;">
+      <a href="../index.html" style="color:#8895aa;text-decoration:none;font-size:1.2rem;line-height:1;">&#8592;</a>
+      <span class="project-name-header">ORION</span>
+      <span class="project-badge">Booking Form</span>
+    </div>
+    <div>
+      <span id="step-text" style="font-size:0.75rem;color:#C9A96E;font-weight:600;white-space:nowrap;">Step 1 of 8</span>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill" id="progress-fill" style="width:0%;"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- STEP 1 (data-step 0) — Primary Applicant Details   -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="form-step active" data-step="0">
+    <div class="step-title"><span class="step-badge">1</span>Details of Applicants</div>
+
+    <div class="form-card">
+      <p class="subsection-title">Form Metadata</p>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Form No.</label>
+          <div id="form-number" style="font-size:1rem;font-weight:600;color:#C9A96E;font-family:'Inter';letter-spacing:0.05em;padding-top:4px;">—</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label required" for="form-date">Date</label>
+          <input type="date" id="form-date" data-field="form-date" class="field-input">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <p class="subsection-title">Primary Applicant</p>
+      <div style="font-size:0.72rem;color:#8895aa;margin-bottom:1rem;">Use CAPITAL LETTERS. One space between First, Middle &amp; Last name.</div>
+
+      <div class="field-row">
+        <div class="field-group" style="flex:0 0 90px;">
+          <label class="field-label required" for="primary-title">Title</label>
+          <select id="primary-title" data-field="primary-title" class="field-input">
+            <option value="">—</option>
+            <option value="Mr.">Mr.</option>
+            <option value="Ms.">Ms.</option>
+            <option value="Mrs.">Mrs.</option>
+            <option value="Dr.">Dr.</option>
+          </select>
+        </div>
+        <div class="field-group" style="flex:1;">
+          <label class="field-label required" for="primary-name">Full Name</label>
+          <input type="text" id="primary-name" data-field="primary-name" class="field-input" placeholder="FULL NAME IN CAPITALS" style="text-transform:uppercase;">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="primary-dob">Date of Birth</label>
+          <input type="date" id="primary-dob" data-field="primary-dob" class="field-input">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="primary-anniversary">Anniversary Date</label>
+          <input type="date" id="primary-anniversary" data-field="primary-anniversary" class="field-input">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Residency Type</label>
+        <div class="checkbox-group">
+          <label class="checkbox-option">
+            <input type="checkbox" data-field="primary-residency" value="Mumbai Resident">
+            <span>Mumbai Resident</span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" data-field="primary-residency" value="Non-Mumbai Resident">
+            <span>Non-Mumbai Resident</span>
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" data-field="primary-residency" value="Non-Resident Indian">
+            <span>Non-Resident Indian</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <p class="subsection-title">Permanent Address</p>
+
+      <div class="field-group">
+        <label class="field-label" for="primary-house">House No. &amp; Building</label>
+        <input type="text" id="primary-house" data-field="primary-house" class="field-input" placeholder="House / Flat / Plot No. &amp; Building Name">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="primary-street">Street Name</label>
+        <input type="text" id="primary-street" data-field="primary-street" class="field-input" placeholder="Street / Road Name">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="primary-locality">Locality / Landmark</label>
+        <input type="text" id="primary-locality" data-field="primary-locality" class="field-input" placeholder="Area / Locality / Landmark">
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="primary-city">City</label>
+          <input type="text" id="primary-city" data-field="primary-city" class="field-input" placeholder="City">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="primary-state">State</label>
+          <input type="text" id="primary-state" data-field="primary-state" class="field-input" placeholder="State">
+        </div>
+        <div class="field-group" style="flex:0 0 100px;">
+          <label class="field-label" for="primary-pin">PIN Code</label>
+          <input type="tel" id="primary-pin" data-field="primary-pin" class="field-input" placeholder="6 digits" maxlength="6" pattern="[0-9]{6}">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="primary-aadhaar">Aadhaar No.</label>
+          <input type="tel" id="primary-aadhaar" data-field="primary-aadhaar" class="field-input" placeholder="12-digit number" maxlength="12">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="primary-pan">PAN No.</label>
+          <input type="text" id="primary-pan" data-field="primary-pan" class="field-input" placeholder="AAAAA9999A" maxlength="10" style="text-transform:uppercase;">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label required" for="primary-mobile">Mobile No.</label>
+          <input type="tel" id="primary-mobile" data-field="primary-mobile" class="field-input" placeholder="10-digit mobile" maxlength="10" required>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="primary-email">Email ID</label>
+          <input type="email" id="primary-email" data-field="primary-email" class="field-input" placeholder="email@example.com">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <p class="subsection-title">Communication Address</p>
+      <label class="comm-toggle-row">
+        <input type="checkbox" id="comm-same-as-perm" data-field="comm-same-as-perm" style="width:18px;height:18px;">
+        <span style="font-size:0.875rem;color:#F0EDE8;">Same as Permanent Address</span>
+      </label>
+      <div id="comm-address-fields">
+        <div class="field-group">
+          <label class="field-label" for="comm-house">House No. &amp; Building</label>
+          <input type="text" id="comm-house" data-field="comm-house" class="field-input" placeholder="House / Flat / Plot No. &amp; Building Name">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="comm-street">Street Name</label>
+          <input type="text" id="comm-street" data-field="comm-street" class="field-input" placeholder="Street / Road Name">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="comm-locality">Locality / Landmark</label>
+          <input type="text" id="comm-locality" data-field="comm-locality" class="field-input" placeholder="Area / Locality / Landmark">
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="comm-city">City</label>
+            <input type="text" id="comm-city" data-field="comm-city" class="field-input" placeholder="City">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="comm-state">State</label>
+            <input type="text" id="comm-state" data-field="comm-state" class="field-input" placeholder="State">
+          </div>
+          <div class="field-group" style="flex:0 0 100px;">
+            <label class="field-label" for="comm-pin">PIN Code</label>
+            <input type="tel" id="comm-pin" data-field="comm-pin" class="field-input" placeholder="6 digits" maxlength="6">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Co-Applicants -->
+    <div style="padding:0 1rem;">
+      <button class="add-coapplicant-btn" id="add-coapplicant-1">+ Add Co-Applicant 1</button>
+    </div>
+    <div id="coapplicant-1-section" class="coapplicant-section" style="margin:0 1rem;display:none;">
+      <p class="subsection-title">Co-Applicant 1</p>
+      <div class="field-row">
+        <div class="field-group" style="flex:0 0 90px;">
+          <label class="field-label" for="co1-title">Title</label>
+          <select id="co1-title" data-field="co1-title" class="field-input">
+            <option value="">—</option>
+            <option value="Mr.">Mr.</option>
+            <option value="Ms.">Ms.</option>
+            <option value="Mrs.">Mrs.</option>
+            <option value="Dr.">Dr.</option>
+          </select>
+        </div>
+        <div class="field-group" style="flex:1;">
+          <label class="field-label" for="co1-name">Full Name</label>
+          <input type="text" id="co1-name" data-field="co1-name" class="field-input" placeholder="FULL NAME" style="text-transform:uppercase;">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="co1-dob">Date of Birth</label>
+        <input type="date" id="co1-dob" data-field="co1-dob" class="field-input">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Residency Type</label>
+        <div class="checkbox-group">
+          <label class="checkbox-option"><input type="checkbox" data-field="co1-residency" value="Mumbai Resident"><span>Mumbai Resident</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="co1-residency" value="Non-Mumbai Resident"><span>Non-Mumbai Resident</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="co1-residency" value="Non-Resident Indian"><span>NRI</span></label>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="co1-aadhaar">Aadhaar No.</label>
+          <input type="tel" id="co1-aadhaar" data-field="co1-aadhaar" class="field-input" placeholder="12 digits" maxlength="12">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="co1-mobile">Mobile No.</label>
+          <input type="tel" id="co1-mobile" data-field="co1-mobile" class="field-input" placeholder="10 digits" maxlength="10">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="co1-email">Email ID</label>
+        <input type="email" id="co1-email" data-field="co1-email" class="field-input" placeholder="email@example.com">
+      </div>
+    </div>
+
+    <div style="padding:0 1rem;margin-top:0.75rem;">
+      <button class="add-coapplicant-btn" id="add-coapplicant-2">+ Add Co-Applicant 2</button>
+    </div>
+    <div id="coapplicant-2-section" class="coapplicant-section" style="margin:0 1rem;display:none;">
+      <p class="subsection-title">Co-Applicant 2</p>
+      <div class="field-row">
+        <div class="field-group" style="flex:0 0 90px;">
+          <label class="field-label" for="co2-title">Title</label>
+          <select id="co2-title" data-field="co2-title" class="field-input">
+            <option value="">—</option>
+            <option value="Mr.">Mr.</option>
+            <option value="Ms.">Ms.</option>
+            <option value="Mrs.">Mrs.</option>
+            <option value="Dr.">Dr.</option>
+          </select>
+        </div>
+        <div class="field-group" style="flex:1;">
+          <label class="field-label" for="co2-name">Full Name</label>
+          <input type="text" id="co2-name" data-field="co2-name" class="field-input" placeholder="FULL NAME" style="text-transform:uppercase;">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="co2-dob">Date of Birth</label>
+        <input type="date" id="co2-dob" data-field="co2-dob" class="field-input">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Residency Type</label>
+        <div class="checkbox-group">
+          <label class="checkbox-option"><input type="checkbox" data-field="co2-residency" value="Mumbai Resident"><span>Mumbai Resident</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="co2-residency" value="Non-Mumbai Resident"><span>Non-Mumbai Resident</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="co2-residency" value="Non-Resident Indian"><span>NRI</span></label>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="co2-aadhaar">Aadhaar No.</label>
+          <input type="tel" id="co2-aadhaar" data-field="co2-aadhaar" class="field-input" placeholder="12 digits" maxlength="12">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="co2-mobile">Mobile No.</label>
+          <input type="tel" id="co2-mobile" data-field="co2-mobile" class="field-input" placeholder="10 digits" maxlength="10">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="co2-email">Email ID</label>
+        <input type="email" id="co2-email" data-field="co2-email" class="field-input" placeholder="email@example.com">
+      </div>
+    </div>
+    <div style="height:0.75rem;"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- STEP 2 (data-step 1) — Application Details        -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="form-step" data-step="1">
+    <div class="step-title"><span class="step-badge">2</span>Application Details</div>
+
+    <div class="form-card">
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label required" for="flat-no">Flat No.</label>
+          <input type="text" id="flat-no" data-field="flat-no" class="field-input" placeholder="e.g. A-1201" required>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="wing">Wing</label>
+          <input type="text" id="wing" data-field="wing" class="field-input" placeholder="e.g. A, B, C">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="floor">Floor</label>
+          <input type="text" id="floor" data-field="floor" class="field-input" placeholder="e.g. 12">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Typology</label>
+        <div class="checkbox-group" id="typology-options">
+          <!-- Rendered by form-engine.js based on config -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- STEP 3 (data-step 2) — Type of Applicant          -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="form-step" data-step="2">
+    <div class="step-title"><span class="step-badge">3</span>Type of Applicant</div>
+
+    <div class="form-card">
+      <div class="field-group">
+        <label class="field-label">Entity Type</label>
+        <div class="entity-grid">
+          <label class="checkbox-option"><input type="checkbox" data-field="entity-type" value="Individual"><span>Individual</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="entity-type" value="Partnership"><span>Partnership</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="entity-type" value="HUF"><span>HUF</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="entity-type" value="Proprietorship"><span>Proprietorship</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="entity-type" value="Private Ltd. Co."><span>Private Ltd. Co.</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="entity-type" value="Public Ltd. Co."><span>Public Ltd. Co.</span></label>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="field-group">
+        <label class="field-label">Employment Type</label>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="employment-type" data-field="employment-type" value="Salaried"><span>Salaried</span></label>
+          <label class="radio-option"><input type="radio" name="employment-type" data-field="employment-type" value="Self-Employed"><span>Self-Employed</span></label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="designation">Designation</label>
+        <input type="text" id="designation" data-field="designation" class="field-input" placeholder="Job designation">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="office-address">Office Address</label>
+        <input type="text" id="office-address" data-field="office-address" class="field-input" placeholder="Full office address">
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- STEP 4 (data-step 3) — Purpose & Payment Terms    -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="form-step" data-step="3">
+    <div class="step-title"><span class="step-badge">4</span>Purpose &amp; Payment Terms</div>
+
+    <div class="form-card">
+      <div class="field-group">
+        <label class="field-label">Purpose of Property</label>
+        <div class="radio-group purpose-grid">
+          <label class="radio-option"><input type="radio" name="purpose" data-field="purpose" value="Self Use"><span>🏠 Self Use</span></label>
+          <label class="radio-option"><input type="radio" name="purpose" data-field="purpose" value="Investment"><span>📈 Investment</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="field-group">
+        <label class="field-label">Payment Terms</label>
+        <div class="radio-group purpose-grid">
+          <label class="radio-option"><input type="radio" name="payment-terms" data-field="payment-terms" value="Self"><span>💰 Self Funded</span></label>
+          <label class="radio-option"><input type="radio" name="payment-terms" data-field="payment-terms" value="Loan"><span>🏦 Home Loan</span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- STEP 5 (data-step 4) — Payment Details            -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="form-step" data-step="4">
+    <div class="step-title"><span class="step-badge">5</span>Payment Details</div>
+
+    <div class="form-card">
+      <div class="field-group">
+        <label class="field-label">Payment Source</label>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="payment-source" data-field="payment-source" value="Self"><span>Self</span></label>
+          <label class="radio-option"><input type="radio" name="payment-source" data-field="payment-source" value="Loan"><span>Loan</span></label>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="field-group">
+        <label class="field-label required" for="payment-amount">Amount (₹)</label>
+        <input type="number" id="payment-amount" data-field="payment-amount" class="field-input" placeholder="Amount in Rupees" required>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Payment Mode</label>
+        <div class="payment-mode-grid">
+          <label class="radio-option"><input type="radio" name="payment-mode-type" data-field="payment-mode-type" value="Cheque"><span>Cheque</span></label>
+          <label class="radio-option"><input type="radio" name="payment-mode-type" data-field="payment-mode-type" value="DD"><span>DD</span></label>
+          <label class="radio-option"><input type="radio" name="payment-mode-type" data-field="payment-mode-type" value="UTR"><span>UTR</span></label>
+          <label class="radio-option"><input type="radio" name="payment-mode-type" data-field="payment-mode-type" value="Transfer"><span>Bank Transfer</span></label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="cheque-no">Cheque / DD / UTR No.</label>
+        <input type="text" id="cheque-no" data-field="cheque-no" class="field-input" placeholder="Reference number">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="account-name">Account Name</label>
+        <input type="text" id="account-name" data-field="account-name" class="field-input" placeholder="Account holder name">
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="account-no">Account No.</label>
+          <input type="tel" id="account-no" data-field="account-no" class="field-input" placeholder="Account number">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="ifsc-code">IFSC Code</label>
+          <input type="text" id="ifsc-code" data-field="ifsc-code" class="field-input" placeholder="IFSC code" style="text-transform:uppercase;" maxlength="11">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="bank-name">Bank Name</label>
+          <input type="text" id="bank-name" data-field="bank-name" class="field-input" placeholder="Bank name">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="branch-name">Branch Name</label>
+          <input type="text" id="branch-name" data-field="branch-name" class="field-input" placeholder="Branch name">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="payment-date">Dated</label>
+        <input type="date" id="payment-date" data-field="payment-date" class="field-input">
+      </div>
+    </div>
+
+    <div class="info-box" style="margin:0.75rem 1rem;">
+      Through cheque or bank transfer, <strong>10% of the agreement value</strong> must be handed over within <strong>15 days</strong> of signing.
+    </div>
+
+    <div class="form-card">
+      <div id="promoter-bank-details"><!-- Rendered by form-engine.js --></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- STEP 6 (data-step 5) — Application Source         -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="form-step" data-step="5">
+    <div class="step-title"><span class="step-badge">6</span>Application Source</div>
+
+    <div class="form-card">
+      <div class="field-group">
+        <label class="field-label">Source of Application</label>
+        <div class="source-grid">
+          <label class="checkbox-option"><input type="checkbox" id="source-direct" data-field="app-source" value="Direct"><span>Direct</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="app-source" value="Presales"><span>Presales</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="app-source" value="Digital"><span>Digital</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="app-source" value="Corporate"><span>Corporate</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="app-source" value="Loyalty"><span>Loyalty</span></label>
+          <label class="checkbox-option"><input type="checkbox" data-field="app-source" value="Referral"><span>Referral</span></label>
+          <label class="checkbox-option"><input type="checkbox" id="source-channel-partner" data-field="app-source" value="Channel Partner"><span>Channel Partner</span></label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="referred-by">Referred by</label>
+        <input type="text" id="referred-by" data-field="referred-by" class="field-input" placeholder="Name of referrer">
+      </div>
+    </div>
+
+    <!-- Channel Partner Details (conditional) -->
+    <div id="channel-partner-details" style="display:none;">
+      <div class="form-card">
+        <p class="subsection-title">Channel Partner Details</p>
+        <div class="field-group">
+          <label class="field-label" for="cp-rera">RERA ID</label>
+          <input type="text" id="cp-rera" data-field="cp-rera" class="field-input" placeholder="Channel Partner RERA ID">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cp-firm">Firm Name</label>
+          <input type="text" id="cp-firm" data-field="cp-firm" class="field-input" placeholder="Firm / Company Name">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cp-mobile">Mobile No.</label>
+          <input type="tel" id="cp-mobile" data-field="cp-mobile" class="field-input" placeholder="Mobile number" maxlength="10">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- STEP 7 (data-step 6) — Declaration & KYC Attachments -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="form-step" data-step="6">
+    <div class="step-title"><span class="step-badge">7</span>Declaration &amp; KYC Attachments</div>
+
+    <div class="form-card">
+      <p class="subsection-title">Declaration</p>
+      <div class="info-box" style="font-size:0.8rem;line-height:1.6;">
+        I/We hereby declare that the information provided is accurate and complete. I/We accept the terms and conditions of booking and confirm my/our acceptance to pay applicable TDS and provide proof to the Promoter.
+      </div>
+      <div class="field-hint" style="margin-top:0.75rem;">Physical signatures will be obtained on the printed form.</div>
+    </div>
+
+    <div class="form-card">
+      <p class="subsection-title">Received By (Sales Team)</p>
+      <div class="field-group">
+        <label class="field-label" for="received-by-1">Sales Manager 1</label>
+        <input type="text" id="received-by-1" data-field="received-by-1" class="field-input" placeholder="Sales Manager 1 name">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="received-by-2">Sales Manager 2</label>
+        <input type="text" id="received-by-2" data-field="received-by-2" class="field-input" placeholder="Sales Manager 2 name">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="declaration-time">Time of Booking</label>
+        <input type="time" id="declaration-time" data-field="declaration-time" class="field-input">
+      </div>
+    </div>
+
+    <!-- KYC Attachments Section -->
+    <div class="form-card form-card--elevated">
+      <p class="subsection-title">Attach KYC Documents</p>
+      <div style="font-size:0.78rem;color:#8895aa;margin-bottom:1rem;">Upload photos/scans of Aadhaar Card and PAN Card. These will be appended to the generated PDF document.</div>
+
+      <div class="ocr-grid">
+        <!-- Aadhaar Upload -->
+        <div>
+          <div class="ocr-upload-area" id="upload-aadhaar-area">
+            <input type="file" id="upload-aadhaar" accept="image/*" capture="environment">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">🪪</div>
+            <div style="font-size:0.8rem;font-weight:600;color:#F0EDE8;">Attach Aadhaar Card</div>
+            <div style="font-size:0.7rem;color:#8895aa;margin-top:2px;">Tap to upload photo</div>
+            <img class="ocr-preview" id="upload-aadhaar-preview" alt="Aadhaar preview">
+          </div>
+          <div class="ocr-status" id="upload-aadhaar-status"></div>
+        </div>
+
+        <!-- PAN Upload -->
+        <div>
+          <div class="ocr-upload-area" id="upload-pan-area">
+            <input type="file" id="upload-pan" accept="image/*" capture="environment">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem;">💳</div>
+            <div style="font-size:0.8rem;font-weight:600;color:#F0EDE8;">Attach PAN Card</div>
+            <div style="font-size:0.7rem;color:#8895aa;margin-top:2px;">Tap to upload photo</div>
+            <img class="ocr-preview" id="upload-pan-preview" alt="PAN preview">
+          </div>
+          <div class="ocr-status" id="upload-pan-status"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- STEP 8 (data-step 7) — Review & Generate PDF       -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="form-step" data-step="7">
+    <div class="step-title"><span class="step-badge">✓</span>Review &amp; Generate PDF</div>
+
+    <div class="form-card form-card--elevated" style="margin-bottom:0.75rem;">
+      <div class="review-header">
+        <div style="font-size:0.85rem;font-weight:600;color:#C9A96E;">Konnark Orion — Booking Form</div>
+        <div style="font-size:0.75rem;color:#8895aa;margin-top:2px;">Review all details before generating the PDF</div>
+      </div>
+      <div id="review-content" style="padding:0.5rem 0;">
+        <!-- Populated by form-engine.js -->
+      </div>
+    </div>
+
+    <div style="padding:0 1rem 0.5rem;">
+      <button id="btn-generate-pdf" class="btn btn-primary" style="width:100%;justify-content:center;font-size:1rem;padding:1rem;">
+        ⬇ Generate &amp; Download PDF
+      </button>
+    </div>
+
+    <div style="padding:0 1rem 1rem;">
+      <button class="clear-form-btn" onclick="KonnarkForm && KonnarkForm.clearForm()">Clear form and start over</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- Fixed Bottom Navigation                            -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <nav class="form-nav">
+    <button id="btn-prev" class="btn btn-secondary" style="display:none;">← Back</button>
+    <span id="nav-step-info" style="font-size:0.75rem;color:#8895aa;"></span>
+    <button id="btn-next" class="btn btn-primary">Next →</button>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- Scripts — Load order matters                       -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <script>
+    const PROJECT_CONFIG = null;
+  </script>
+  <script src="../shared/config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js"></script>
+  <script src="../shared/pdf-generator.js"></script>
+  <script src="../shared/form-engine.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      KonnarkForm.init(KONNARK_CONFIGS.orion);
+    });
+  </script>
+</body>
+</html>
