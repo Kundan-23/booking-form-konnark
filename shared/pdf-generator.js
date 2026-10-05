@@ -840,6 +840,371 @@ const KonnarkPDF = (function () {
     return items;
   }
 
+  // ── PAGE 7: Cost Sheet (Exact Replica of Reference Image) ────
+  function buildCostSheetPage(data, cfg, logoData) {
+    const clientName = fv(data['cs-client-name']) || `${fv(data['primary-title'])} ${fv(data['primary-name'])}`.trim() || 'Customer Name';
+    const unitNo = fv(data['cs-unit-no']) || fv(data['flat-no']) || '—';
+    const configVal = fv(data['cs-configuration']) || (Array.isArray(data['typology']) ? data['typology'].join(', ') : fv(data['typology'])) || (cfg.typologyOptions ? cfg.typologyOptions[0] : '');
+    const usableArea = fv(data['cs-usable-area']) || '—';
+    const aptCost = fv(data['cs-apartment-cost']) || '—';
+    const devCharges = fv(data['cs-dev-charges']) || '—';
+    const otherCharges = fv(data['cs-other-charges']) || '—';
+    const flatCost = fv(data['cs-flat-cost']) || '—';
+    const stampDuty = fv(data['cs-stamp-duty']) || '—';
+    const registration = fv(data['cs-registration']) || '—';
+    const legalCharges = fv(data['cs-legal-charges']) || '—';
+    const gst = fv(data['cs-gst']) || '—';
+    const agreeVal = fv(data['cs-agreement-value']) || '—';
+    const parking = fv(data['cs-parking']) || 'NO';
+    const maintenance = fv(data['cs-maintenance']) || '—';
+    const societyFormation = fv(data['cs-society-formation']) || '—';
+
+    const bankName = cfg.promoterBank && cfg.promoterBank.accountName ? cfg.promoterBank.accountName : `Konnark Stays RERA Designated Collection Account for ${cfg.projectName}`;
+    const siteAddr = cfg.siteAddress || 'Survey No. 61, Village – Giravale, Taluka – Panvel, District – Raigad – 410221';
+    const contactPh = cfg.contactPhone || '8097239961';
+    const contactEm = cfg.contactEmail || 'sales@konnark.com';
+
+    // Header Logo + Wordmark (matching Image 3)
+    const brandHeader = logoData ? {
+      columns: [
+        { width: '*', text: '' },
+        {
+          width: 'auto',
+          columns: [
+            { image: logoData, width: 48, margin: [0, 0, 10, 0] },
+            {
+              width: 'auto',
+              stack: [
+                { text: 'K O N N A R K', fontSize: 13, bold: true, characterSpacing: 4, alignment: 'left', margin: [0, 2, 0, 2] },
+                { text: cfg.projectTitle, fontSize: 24, bold: true, characterSpacing: 2, alignment: 'left' }
+              ]
+            }
+          ]
+        },
+        { width: '*', text: '' }
+      ],
+      margin: [0, 4, 0, 10]
+    } : {
+      stack: [
+        { text: 'K O N N A R K', fontSize: 14, bold: true, characterSpacing: 4, alignment: 'center' },
+        { text: cfg.projectTitle, fontSize: 24, bold: true, characterSpacing: 2, alignment: 'center', margin: [0, 2, 0, 8] }
+      ],
+      margin: [0, 4, 0, 8]
+    };
+
+    const costTableBody = [
+      [
+        { text: clientName, colSpan: 2, bold: true, fontSize: 11, margin: [4, 3, 4, 3] },
+        {}
+      ],
+      [
+        { text: 'Unit No', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: unitNo, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Configuration', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: configVal, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Usable Area in sq.ft. (Carpet + Balcony)', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: usableArea, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Apartment Cost', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: aptCost, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Development Charges', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: devCharges, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Other Charges', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: otherCharges, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Flat Cost', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: flatCost, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Stamp Duty', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: stampDuty, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Registration Charges', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: registration, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Legal Charges', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: legalCharges, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'GST', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: gst, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Agreement Value', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: agreeVal, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: '1 Car Parking Positions in Stack Mechanism', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: parking, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Maintenance 1 Yr (Excluding At Possession)', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: maintenance, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ],
+      [
+        { text: 'Society Formation ((Excluding At Possession)', bold: true, fontSize: 8.5, margin: [4, 2, 4, 2] },
+        { text: societyFormation, bold: true, fontSize: 8.5, alignment: 'center', margin: [4, 2, 4, 2] }
+      ]
+    ];
+
+    const innerStack = [
+      brandHeader,
+      {
+        table: {
+          widths: ['*', 140],
+          body: costTableBody
+        },
+        layout: {
+          hLineWidth: () => 0.8,
+          vLineWidth: () => 0.8,
+          hLineColor: () => '#000000',
+          vLineColor: () => '#000000'
+        },
+        margin: [0, 0, 0, 8]
+      },
+      // Site address
+      {
+        stack: [
+          { text: 'Site Address :-', bold: true, fontSize: 8, margin: [0, 0, 0, 2] },
+          { text: siteAddr, fontSize: 7.5, margin: [0, 0, 0, 2] },
+          { text: `Mob. No. : ${contactPh} | E-mail : ${contactEm}`, fontSize: 7.5 }
+        ],
+        margin: [2, 0, 2, 6]
+      },
+      // Divider line
+      {
+        canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 0.8, lineColor: '#000000' }],
+        margin: [0, 0, 0, 6]
+      },
+      // Bullet points
+      {
+        stack: [
+          { text: '· Prevailing TDS payable as per Govt.norms on Net Consideration value shall be payable by the Allotee(s) to Government directly and shall submit Form-16B to the developer.', fontSize: 7, margin: [0, 0, 0, 2] },
+          { text: '· Society Maintenance & any other Government Charges as applicable at the time of possession.', fontSize: 7, margin: [0, 0, 0, 2] },
+          { text: [
+            { text: '· Cheque to be issued in the favor “ ', fontSize: 7 },
+            { text: bankName, fontSize: 7, bold: true },
+            { text: ' ”', fontSize: 7 }
+          ], margin: [0, 0, 0, 2] }
+        ],
+        margin: [2, 0, 2, 8]
+      },
+      // Signatures
+      {
+        canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 0.8, lineColor: '#000000' }],
+        margin: [0, 0, 0, 18]
+      },
+      {
+        columns: [
+          { text: 'Sales Manager Signature', fontSize: 8, bold: true, alignment: 'left' },
+          { text: 'Date', fontSize: 8, bold: true, alignment: 'center' },
+          { text: 'Customer Signature', fontSize: 8, bold: true, alignment: 'right' }
+        ],
+        margin: [4, 0, 4, 4]
+      }
+    ];
+
+    return [
+      {
+        table: {
+          widths: ['*'],
+          body: [[
+            {
+              stack: innerStack,
+              border: [true, true, true, true],
+              margin: [14, 8, 14, 8]
+            }
+          ]]
+        },
+        layout: {
+          hLineWidth: () => 1,
+          vLineWidth: () => 1,
+          hLineColor: () => '#000000',
+          vLineColor: () => '#000000'
+        },
+        pageBreak: 'before'
+      }
+    ];
+  }
+
+  // ── PAGE 8: Deal Sheet (Deal Confirmation Terms) ─────────────
+  function buildDealSheetPage(data, cfg, logoData) {
+    const clientName = fv(data['cs-client-name']) || `${fv(data['primary-title'])} ${fv(data['primary-name'])}`.trim() || 'Customer Name';
+    const formDate = fdate(data['form-date']);
+    const unitNo = fv(data['cs-unit-no']) || fv(data['flat-no']) || '—';
+    const configVal = fv(data['cs-configuration']) || (Array.isArray(data['typology']) ? data['typology'].join(', ') : fv(data['typology'])) || (cfg.typologyOptions ? cfg.typologyOptions[0] : '');
+    const usableCarpet = fv(data['cs-usable-area']);
+    const amountAgreed = fv(data['deal-amount-agreed']) || fv(data['cs-agreement-value']) || fv(data['payment-amount']) || '—';
+    const parkingDeal = fv(data['deal-parking']) || fv(data['cs-parking']) || 'Included';
+    const maintenanceDeal = fv(data['deal-maintenance']) || 'Excluding';
+    const paymentSchedule = fv(data['deal-payment-terms']) || 'As per Standard Agreement Milestone Schedule';
+
+    const brandHeader = logoData ? {
+      columns: [
+        { width: '*', text: '' },
+        {
+          width: 'auto',
+          columns: [
+            { image: logoData, width: 48, margin: [0, 0, 10, 0] },
+            {
+              width: 'auto',
+              stack: [
+                { text: 'K O N N A R K', fontSize: 13, bold: true, characterSpacing: 4, alignment: 'left', margin: [0, 2, 0, 2] },
+                { text: cfg.projectTitle, fontSize: 24, bold: true, characterSpacing: 2, alignment: 'left' }
+              ]
+            }
+          ]
+        },
+        { width: '*', text: '' }
+      ],
+      margin: [0, 4, 0, 8]
+    } : {
+      stack: [
+        { text: 'K O N N A R K', fontSize: 14, bold: true, characterSpacing: 4, alignment: 'center' },
+        { text: cfg.projectTitle, fontSize: 24, bold: true, characterSpacing: 2, alignment: 'center', margin: [0, 2, 0, 8] }
+      ],
+      margin: [0, 4, 0, 8]
+    };
+
+    const dealTableBody = [
+      [
+        { text: 'CUSTOMER / APPLICANT NAME', bold: true, fontSize: 8.5, fillColor: '#f2f2f2', margin: [4, 4, 4, 4] },
+        { text: clientName, bold: true, fontSize: 9.5, margin: [4, 4, 4, 4] }
+      ],
+      [
+        { text: 'UNIT NO.', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
+        { text: unitNo, bold: true, fontSize: 9, alignment: 'center', margin: [4, 4, 4, 4] }
+      ],
+      [
+        { text: 'CONFIGURATION', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
+        { text: configVal, bold: true, fontSize: 9, alignment: 'center', margin: [4, 4, 4, 4] }
+      ],
+      [
+        { text: 'USABLE CARPET AREA', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
+        { text: usableCarpet ? `${usableCarpet} sq.ft.` : '—', bold: true, fontSize: 9, alignment: 'center', margin: [4, 4, 4, 4] }
+      ],
+      [
+        { text: 'AMOUNT AGREED', bold: true, fontSize: 9, fillColor: '#eef2f7', margin: [4, 5, 4, 5] },
+        { text: amountAgreed !== '—' ? `₹ ${amountAgreed}` : '—', bold: true, fontSize: 11, alignment: 'center', color: '#1C2B4A', margin: [4, 5, 4, 5] }
+      ],
+      [
+        { text: 'CAR PARKING', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
+        { text: parkingDeal, bold: true, fontSize: 9, alignment: 'center', margin: [4, 4, 4, 4] }
+      ],
+      [
+        { text: 'MAINTENANCE (1 YEAR)', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
+        { text: maintenanceDeal, bold: true, fontSize: 9, alignment: 'center', margin: [4, 4, 4, 4] }
+      ],
+      [
+        { text: 'PAYMENT TERMS / SCHEDULE', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
+        { text: paymentSchedule, fontSize: 8.5, margin: [4, 4, 4, 4] }
+      ]
+    ];
+
+    const innerStack = [
+      brandHeader,
+      {
+        table: {
+          widths: ['*'],
+          body: [[{
+            text: 'DEAL CONFIRMATION SHEET',
+            fillColor: '#1C2B4A',
+            color: '#ffffff',
+            bold: true,
+            fontSize: 11,
+            alignment: 'center',
+            characterSpacing: 2,
+            margin: [0, 4, 0, 4]
+          }]]
+        },
+        layout: 'noBorders',
+        margin: [0, 0, 0, 8]
+      },
+      // Meta row
+      {
+        columns: [
+          { text: [{ text: 'Form No: ', bold: true, fontSize: 8.5 }, { text: fv(data.formNo) || '—', fontSize: 8.5 }] },
+          { text: [{ text: 'Date: ', bold: true, fontSize: 8.5 }, { text: formDate || '—', fontSize: 8.5 }], alignment: 'right' }
+        ],
+        margin: [2, 0, 2, 8]
+      },
+      // Deal Table
+      {
+        table: {
+          widths: [180, '*'],
+          body: dealTableBody
+        },
+        layout: {
+          hLineWidth: () => 0.8,
+          vLineWidth: () => 0.8,
+          hLineColor: () => '#000000',
+          vLineColor: () => '#000000'
+        },
+        margin: [0, 0, 0, 12]
+      },
+      // Declaration
+      {
+        stack: [
+          { text: 'Deal Declaration & Acceptance:', bold: true, fontSize: 8, margin: [0, 0, 0, 2] },
+          {
+            text: 'I/We hereby confirm the commercial deal terms stated above for the subject unit. The above consideration has been agreed mutually and is binding upon signing this booking transaction. All statutory charges, taxes, and registration expenses shall be borne in accordance with applicable MahaRERA norms and project terms.',
+            fontSize: 7.5,
+            lineHeight: 1.35,
+            color: '#222222'
+          }
+        ],
+        margin: [2, 0, 2, 24]
+      },
+      // Signature lines
+      {
+        canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 0.8, lineColor: '#000000' }],
+        margin: [0, 0, 0, 24]
+      },
+      {
+        columns: [
+          { text: 'Sales Manager Signature', fontSize: 8, bold: true, alignment: 'left' },
+          { text: 'Date', fontSize: 8, bold: true, alignment: 'center' },
+          { text: 'Customer Signature', fontSize: 8, bold: true, alignment: 'right' }
+        ],
+        margin: [4, 0, 4, 6]
+      }
+    ];
+
+    return [
+      {
+        table: {
+          widths: ['*'],
+          body: [[
+            {
+              stack: innerStack,
+              border: [true, true, true, true],
+              margin: [14, 12, 14, 12]
+            }
+          ]]
+        },
+        layout: {
+          hLineWidth: () => 1,
+          vLineWidth: () => 1,
+          hLineColor: () => '#000000',
+          vLineColor: () => '#000000'
+        },
+        pageBreak: 'before'
+      }
+    ];
+  }
+
   // ── pdfmake style definitions ──────────────────────────────
   function getStyles() {
     return {
@@ -895,7 +1260,9 @@ const KonnarkPDF = (function () {
         ...buildPage3(data, cfg),
         ...buildPage4(data, cfg),
         ...buildPage5(data, cfg),
-        ...buildPageKYC(data)
+        ...buildPageKYC(data),
+        ...buildCostSheetPage(data, cfg, logoData),
+        ...buildDealSheetPage(data, cfg, logoData)
       ];
 
       const docDef = {

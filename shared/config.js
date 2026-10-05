@@ -21,28 +21,35 @@ const KONNARK_CONFIGS = {
       ifsc: 'IBKL0000183'
     },
     termsCompany: 'Konnark Stays',
-    termsAgreement: 'Konnark Stellar Standard format'
+    termsAgreement: 'Konnark Stellar Standard format',
+    siteAddress: 'Survey No. 61, Village – Giravale, Taluka – Panvel, District – Raigad – 410221',
+    contactPhone: '8097239961',
+    contactEmail: 'sales@konnark.com'
   },
   orion: {
     projectId: 'orion',
     projectName: 'Konnark Orion',
     projectTitle: 'ORION',
     company: 'Konnark Macrohomes LLP',
-    rera: '[To Be Updated]',
+    rera: 'P52000015880',
     location: 'Navi Mumbai',
     jurisdiction: 'Panvel',
     typologyOptions: ['Mini 2 BHK', '2 BHK'],
     formPrefix: 'KO',
     accentColor: '#C9A96E',
     promoterBank: {
-      accountName: '[To Be Updated]',
-      accountNo: '[To Be Updated]',
-      bank: '[To Be Updated]',
-      branch: '[To Be Updated]',
-      ifsc: '[To Be Updated]'
+      accountName: 'Konnark Macrohomes LLP Rera Designated Collection Account for Konnark Orion',
+      accountNo: '0183102000037138',
+      bank: 'IDBI Bank',
+      branch: 'CBD Belapur',
+      ifsc: 'IBKL0000183',
+      gst: '27ABAFK9829J1ZU'
     },
     termsCompany: 'Konnark Macrohomes LLP',
-    termsAgreement: 'Konnark Orion Standard format'
+    termsAgreement: 'Konnark Orion Standard format',
+    siteAddress: 'Survey No. 61, Village – Giravale, Taluka – Panvel, District – Raigad – 410221',
+    contactPhone: '8097239961',
+    contactEmail: 'sales@konnark.com'
   }
 };
 

@@ -52,7 +52,7 @@
       <span class="project-badge">Booking Form</span>
     </div>
     <div>
-      <span id="step-text" style="font-size:0.75rem;color:#C9A96E;font-weight:600;white-space:nowrap;">Step 1 of 8</span>
+      <span id="step-text" style="font-size:0.75rem;color:#C9A96E;font-weight:600;white-space:nowrap;">Step 1 of 9</span>
     </div>
   </header>
 
@@ -609,9 +609,137 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════ -->
-  <!-- STEP 8 (data-step 7) — Review & Generate PDF       -->
+  <!-- STEP 8 (data-step 7) — Cost Sheet & Deal Details   -->
   <!-- ═══════════════════════════════════════════════════ -->
   <div class="form-step" data-step="7">
+    <div class="step-title"><span class="step-badge">8</span>Cost Sheet &amp; Deal Details</div>
+
+    <div class="form-card">
+      <p class="subsection-title">Property &amp; Client Details</p>
+      <div class="field-row">
+        <div class="field-group" style="flex:2;">
+          <label class="field-label" for="cs-client-name">Client / Customer Name</label>
+          <input type="text" id="cs-client-name" data-field="cs-client-name" class="field-input" placeholder="Customer Name">
+        </div>
+        <div class="field-group" style="flex:1;">
+          <label class="field-label" for="cs-unit-no">Unit No.</label>
+          <input type="text" id="cs-unit-no" data-field="cs-unit-no" class="field-input" placeholder="e.g. 1808">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="cs-configuration">Configuration</label>
+          <input type="text" id="cs-configuration" data-field="cs-configuration" class="field-input" placeholder="e.g. Mini 2 BHK / 2 BHK">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cs-usable-area">Usable Carpet Area (Carpet + Balcony in sq.ft.)</label>
+          <input type="text" id="cs-usable-area" data-field="cs-usable-area" class="field-input" placeholder="e.g. 520">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <p class="subsection-title">Cost Sheet Breakdown</p>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="cs-apartment-cost">Apartment Cost (₹)</label>
+          <input type="number" id="cs-apartment-cost" data-field="cs-apartment-cost" class="field-input" placeholder="e.g. 2151360">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cs-dev-charges">Development Charges (₹)</label>
+          <input type="number" id="cs-dev-charges" data-field="cs-dev-charges" class="field-input" placeholder="e.g. 126000">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="cs-other-charges">Other Charges (₹)</label>
+          <input type="number" id="cs-other-charges" data-field="cs-other-charges" class="field-input" placeholder="e.g. 125000">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cs-flat-cost">Flat Cost (₹)</label>
+          <input type="number" id="cs-flat-cost" data-field="cs-flat-cost" class="field-input" placeholder="e.g. 2402360">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="cs-stamp-duty">Stamp Duty (₹)</label>
+          <input type="number" id="cs-stamp-duty" data-field="cs-stamp-duty" class="field-input" placeholder="e.g. 144142">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cs-registration">Registration Charges (₹)</label>
+          <input type="number" id="cs-registration" data-field="cs-registration" class="field-input" placeholder="e.g. 24024">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="cs-legal-charges">Legal Charges (₹)</label>
+          <input type="number" id="cs-legal-charges" data-field="cs-legal-charges" class="field-input" placeholder="e.g. 5451">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cs-gst">GST (₹)</label>
+          <input type="number" id="cs-gst" data-field="cs-gst" class="field-input" placeholder="e.g. 24024">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="cs-agreement-value">Agreement Value (₹)</label>
+          <input type="number" id="cs-agreement-value" data-field="cs-agreement-value" class="field-input" placeholder="e.g. 2600000">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cs-parking">Car Parking in Stack Mechanism</label>
+          <input type="text" id="cs-parking" data-field="cs-parking" class="field-input" placeholder="e.g. NO / YES / Type A / Type B">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="cs-maintenance">Maintenance 1 Yr (Excl. At Possession) (₹)</label>
+          <input type="text" id="cs-maintenance" data-field="cs-maintenance" class="field-input" placeholder="e.g. 38880">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cs-society-formation">Society Formation (Excl. At Possession) (₹)</label>
+          <input type="text" id="cs-society-formation" data-field="cs-society-formation" class="field-input" placeholder="e.g. 80000">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card form-card--elevated">
+      <p class="subsection-title">Deal Confirmation Terms</p>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="deal-amount-agreed">Amount Agreed (₹)</label>
+          <input type="number" id="deal-amount-agreed" data-field="deal-amount-agreed" class="field-input" placeholder="Agreed Final Amount">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="deal-parking">Parking Terms</label>
+          <select id="deal-parking" data-field="deal-parking" class="field-input">
+            <option value="Included (Stack Mechanism)">Included (Stack Mechanism)</option>
+            <option value="Included (Type A)">Included (Type A)</option>
+            <option value="Included (Type B)">Included (Type B)</option>
+            <option value="Excluded">Excluded</option>
+            <option value="No Parking">No Parking</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="deal-maintenance">Maintenance Terms</label>
+          <select id="deal-maintenance" data-field="deal-maintenance" class="field-input">
+            <option value="Excluding (Payable at Possession)">Excluding (Payable at Possession)</option>
+            <option value="Included in Package">Included in Package</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="deal-payment-terms">Payment Terms / Remarks</label>
+          <input type="text" id="deal-payment-terms" data-field="deal-payment-terms" class="field-input" placeholder="e.g. 10% on Booking, Balance as per Slab">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- STEP 9 (data-step 8) — Review & Generate PDF       -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="form-step" data-step="8">
     <div class="step-title"><span class="step-badge">✓</span>Review &amp; Generate PDF</div>
 
     <div class="form-card form-card--elevated" style="margin-bottom:0.75rem;">

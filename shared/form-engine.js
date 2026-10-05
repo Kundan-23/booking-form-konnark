@@ -3,7 +3,7 @@
 
 const KonnarkForm = (function() {
   let currentStep = 0;
-  let totalSteps = 7; // Indices 0 through 7 (Total 8 steps)
+  let totalSteps = 8; // Indices 0 through 8 (Total 9 steps: Steps 1-8 + Review)
   let config = null;
   let formData = {};
   let formNo = '';
@@ -53,6 +53,9 @@ const KonnarkForm = (function() {
 
     // Setup document attachment handlers
     setupDocumentUploadHandlers();
+
+    // Setup cost sheet calculation listeners
+    setupCostSheetCalculations();
 
     // Setup auto-save
     setupAutoSave();
@@ -216,6 +219,40 @@ const KonnarkForm = (function() {
     reader.readAsDataURL(file);
   }
 
+  function setupCostSheetCalculations() {
+    const aptInput = document.getElementById('cs-apartment-cost');
+    const devInput = document.getElementById('cs-dev-charges');
+    const otherInput = document.getElementById('cs-other-charges');
+    const flatCostInput = document.getElementById('cs-flat-cost');
+    const agreeInput = document.getElementById('cs-agreement-value');
+    const dealAmtInput = document.getElementById('deal-amount-agreed');
+
+    function updateFlatCost() {
+      if (!flatCostInput) return;
+      const apt = parseFloat(aptInput?.value) || 0;
+      const dev = parseFloat(devInput?.value) || 0;
+      const other = parseFloat(otherInput?.value) || 0;
+      if (apt > 0 || dev > 0 || other > 0) {
+        flatCostInput.value = (apt + dev + other).toString();
+      }
+    }
+
+    [aptInput, devInput, otherInput].forEach(inp => {
+      if (inp) inp.addEventListener('input', updateFlatCost);
+    });
+
+    if (agreeInput && dealAmtInput) {
+      agreeInput.addEventListener('input', () => {
+        if (!dealAmtInput.value || dealAmtInput.dataset.manual !== 'true') {
+          dealAmtInput.value = agreeInput.value;
+        }
+      });
+      dealAmtInput.addEventListener('input', () => {
+        dealAmtInput.dataset.manual = 'true';
+      });
+    }
+  }
+
   function setupAutoSave() {
     document.querySelectorAll('input, select, textarea').forEach(el => {
       el.addEventListener('change', () => saveToStorage());
@@ -362,6 +399,31 @@ const KonnarkForm = (function() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    if (step === 7) {
+      // Auto-prefill Cost Sheet & Deal fields from earlier steps if blank
+      const nameEl = document.getElementById('cs-client-name');
+      if (nameEl && !nameEl.value.trim()) {
+        const title = (document.getElementById('primary-title')?.value || '').trim();
+        const pName = (document.getElementById('primary-name')?.value || '').trim();
+        nameEl.value = `${title} ${pName}`.trim();
+      }
+      const unitEl = document.getElementById('cs-unit-no');
+      if (unitEl && !unitEl.value.trim()) {
+        unitEl.value = (document.getElementById('flat-no')?.value || '').trim();
+      }
+      const configEl = document.getElementById('cs-configuration');
+      if (configEl && !configEl.value.trim()) {
+        const checkedTypology = Array.from(document.querySelectorAll('input[name="typology"]:checked')).map(el => el.value);
+        configEl.value = checkedTypology.join(', ');
+      }
+      const dealAmtEl = document.getElementById('deal-amount-agreed');
+      if (dealAmtEl && !dealAmtEl.value.trim()) {
+        const csAgree = document.getElementById('cs-agreement-value')?.value || '';
+        const payAmt = document.getElementById('payment-amount')?.value || '';
+        dealAmtEl.value = csAgree || payAmt;
+      }
+    }
+
     if (step === totalSteps) populateReview();
 
     updateStepDisplay();
@@ -435,6 +497,17 @@ const KonnarkForm = (function() {
         <p class="subsection-title">KYC Attachments</p>
         <div class="review-field"><span class="field-label">Aadhaar Card</span><span>${hasAadhaar ? '✓ Attached' : 'Not Attached'}</span></div>
         <div class="review-field"><span class="field-label">PAN Card</span><span>${hasPAN ? '✓ Attached' : 'Not Attached'}</span></div>
+      </div>
+      <div class="review-section">
+        <p class="subsection-title">Cost Sheet &amp; Deal Summary</p>
+        <div class="review-field"><span class="field-label">Unit No.</span><span>${data['cs-unit-no'] || data['flat-no'] || '—'}</span></div>
+        <div class="review-field"><span class="field-label">Configuration</span><span>${data['cs-configuration'] || '—'}</span></div>
+        <div class="review-field"><span class="field-label">Usable Area</span><span>${data['cs-usable-area'] ? data['cs-usable-area'] + ' sq.ft.' : '—'}</span></div>
+        <div class="review-field"><span class="field-label">Flat Cost</span><span>₹ ${data['cs-flat-cost'] || '—'}</span></div>
+        <div class="review-field"><span class="field-label">Agreement Value</span><span>₹ ${data['cs-agreement-value'] || '—'}</span></div>
+        <div class="review-field"><span class="field-label">Amount Agreed</span><span>₹ ${data['deal-amount-agreed'] || data['cs-agreement-value'] || '—'}</span></div>
+        <div class="review-field"><span class="field-label">Parking</span><span>${data['deal-parking'] || data['cs-parking'] || '—'}</span></div>
+        <div class="review-field"><span class="field-label">Maintenance</span><span>${data['deal-maintenance'] || '—'}</span></div>
       </div>
     `;
   }
