@@ -1438,3 +1438,99 @@ input[type="number"] {
   }
 }
 
+/* ── Stepper Navigation Bar (Horizontal Scroll / Clickable Pills) ── */
+.step-nav-bar {
+  display: flex;
+  overflow-x: auto;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: rgba(13, 22, 38, 0.95);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 63px;
+  z-index: 98;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+.step-nav-bar::-webkit-scrollbar {
+  display: none;
+}
+.step-nav-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.73rem;
+  font-weight: 500;
+  padding: 0.35rem 0.7rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-family: var(--font-body);
+}
+.step-nav-pill:hover {
+  border-color: var(--color-gold);
+  color: var(--color-text);
+  background: rgba(201, 169, 110, 0.08);
+}
+.step-nav-pill.active {
+  background: var(--color-gold);
+  border-color: var(--color-gold);
+  color: #0a0f1e;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(201, 169, 110, 0.3);
+}
+.step-nav-pill.deal-pill {
+  border-color: rgba(201, 169, 110, 0.5);
+  color: var(--color-gold);
+}
+.step-nav-pill.deal-pill.active {
+  background: var(--color-gold);
+  color: #0a0f1e;
+}
+
+/* ── Review Screen Section Header with Edit Button ── */
+.review-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.review-edit-btn {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-gold);
+  background: rgba(201, 169, 110, 0.1);
+  border: 1px solid rgba(201, 169, 110, 0.3);
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
+}
+.review-edit-btn:hover {
+  background: var(--color-gold);
+  color: #0a0f1e;
+}
+.cost-sheet-alert-banner {
+  background: rgba(201, 169, 110, 0.1);
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.cost-sheet-alert-banner:hover {
+  background: rgba(201, 169, 110, 0.18);
+}
+

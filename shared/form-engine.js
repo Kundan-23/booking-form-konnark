@@ -103,6 +103,16 @@ const KonnarkForm = (function() {
     if (btnNext) btnNext.addEventListener('click', nextStep);
     if (btnPrev) btnPrev.addEventListener('click', prevStep);
 
+    // Clickable Stepper Pills
+    document.querySelectorAll('.step-nav-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const targetStep = parseInt(pill.dataset.navStep, 10);
+        if (!isNaN(targetStep)) {
+          showStep(targetStep);
+        }
+      });
+    });
+
     // PDF button
     const btnPDF = document.getElementById('btn-generate-pdf');
     if (btnPDF) btnPDF.addEventListener('click', () => {
@@ -392,11 +402,21 @@ const KonnarkForm = (function() {
   }
 
   function showStep(step) {
+    currentStep = step;
     document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
     const target = document.querySelector(`.form-step[data-step="${step}"]`);
     if (target) {
       target.classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Sync Stepper Pills
+    document.querySelectorAll('.step-nav-pill').forEach((pill, idx) => {
+      pill.classList.toggle('active', idx === step);
+    });
+    const activePill = document.querySelector(`.step-nav-pill[data-nav-step="${step}"]`);
+    if (activePill) {
+      activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
 
     if (step === 7) {
@@ -438,7 +458,7 @@ const KonnarkForm = (function() {
 
     const isReview = currentStep === totalSteps;
     const isFirst = currentStep === 0;
-    const totalCount = totalSteps + 1; // 8 total steps
+    const totalCount = totalSteps + 1; // 9 total steps (1-8 + Review)
 
     if (stepText) stepText.textContent = isReview ? 'Review & Generate' : `Step ${currentStep + 1} of ${totalCount}`;
     if (navStepInfo) navStepInfo.textContent = isReview ? 'Review & Generate PDF' : `Step ${currentStep + 1} / ${totalCount}`;
@@ -447,7 +467,13 @@ const KonnarkForm = (function() {
     if (btnPrev) btnPrev.style.display = isFirst ? 'none' : 'flex';
     if (btnNext) {
       btnNext.style.display = isReview ? 'none' : 'flex';
-      btnNext.textContent = currentStep === totalSteps - 1 ? 'Review →' : 'Next →';
+      if (currentStep === 6) {
+        btnNext.textContent = 'Next: Cost Sheet & Deal →';
+      } else if (currentStep === 7) {
+        btnNext.textContent = 'Next: Review & Generate PDF →';
+      } else {
+        btnNext.textContent = 'Next →';
+      }
     }
   }
 
@@ -458,15 +484,33 @@ const KonnarkForm = (function() {
 
     const hasAadhaar = !!window._aadhaarImageURL;
     const hasPAN = !!window._panImageURL;
+    const hasCostSheetData = !!(data['cs-apartment-cost'] || data['cs-agreement-value'] || data['deal-amount-agreed']);
 
     container.innerHTML = `
+      ${!hasCostSheetData ? `
+        <div class="cost-sheet-alert-banner" onclick="KonnarkForm.showStep(7)">
+          <div>
+            <div style="font-weight:700;font-size:0.85rem;color:#C9A96E;">⚠️ Cost Sheet &amp; Deal values are blank!</div>
+            <div style="font-size:0.75rem;color:#d0d7de;margin-top:2px;">Tap here to enter apartment cost, charges, and deal terms in Step 8 before downloading PDF.</div>
+          </div>
+          <button type="button" class="btn btn-primary" style="font-size:0.75rem;padding:0.4rem 0.8rem;white-space:nowrap;">Fill Now →</button>
+        </div>
+      ` : ''}
+
       <div class="review-section">
-        <p class="subsection-title">Form Details</p>
+        <div class="review-section-header">
+          <p class="subsection-title" style="margin-bottom:0;">Form Details</p>
+          <button type="button" class="review-edit-btn" onclick="KonnarkForm.showStep(0)">✏️ Edit</button>
+        </div>
         <div class="review-field"><span class="field-label">Form No.</span><span>${data.formNo || ''}</span></div>
         <div class="review-field"><span class="field-label">Date</span><span>${formatDate(data['form-date']) || ''}</span></div>
       </div>
+
       <div class="review-section">
-        <p class="subsection-title">Primary Applicant</p>
+        <div class="review-section-header">
+          <p class="subsection-title" style="margin-bottom:0;">Primary Applicant</p>
+          <button type="button" class="review-edit-btn" onclick="KonnarkForm.showStep(0)">✏️ Edit</button>
+        </div>
         <div class="review-field"><span class="field-label">Name</span><span>${(data['primary-title'] || '') + ' ' + (data['primary-name'] || '')}</span></div>
         <div class="review-field"><span class="field-label">DOB</span><span>${formatDate(data['primary-dob']) || ''}</span></div>
         <div class="review-field"><span class="field-label">Mobile</span><span>${data['primary-mobile'] || ''}</span></div>
@@ -475,39 +519,60 @@ const KonnarkForm = (function() {
         <div class="review-field"><span class="field-label">PAN No.</span><span>${data['primary-pan'] || ''}</span></div>
         <div class="review-field"><span class="field-label">Address</span><span>${[data['primary-house'], data['primary-street'], data['primary-locality'], data['primary-city'], data['primary-state'], data['primary-pin']].filter(Boolean).join(', ')}</span></div>
       </div>
+
       <div class="review-section">
-        <p class="subsection-title">Application Details</p>
+        <div class="review-section-header">
+          <p class="subsection-title" style="margin-bottom:0;">Application Details</p>
+          <button type="button" class="review-edit-btn" onclick="KonnarkForm.showStep(1)">✏️ Edit</button>
+        </div>
         <div class="review-field"><span class="field-label">Flat No.</span><span>${data['flat-no'] || ''}</span></div>
         <div class="review-field"><span class="field-label">Wing</span><span>${data['wing'] || ''}</span></div>
         <div class="review-field"><span class="field-label">Floor</span><span>${data['floor'] || ''}</span></div>
         <div class="review-field"><span class="field-label">Typology</span><span>${Array.isArray(data['typology']) ? data['typology'].join(', ') : (data['typology'] || '')}</span></div>
       </div>
+
       <div class="review-section">
-        <p class="subsection-title">Payment</p>
+        <div class="review-section-header">
+          <p class="subsection-title" style="margin-bottom:0;">Payment</p>
+          <button type="button" class="review-edit-btn" onclick="KonnarkForm.showStep(4)">✏️ Edit</button>
+        </div>
         <div class="review-field"><span class="field-label">Amount</span><span>₹ ${data['payment-amount'] || ''}</span></div>
         <div class="review-field"><span class="field-label">Mode</span><span>${data['payment-mode-type'] || ''}</span></div>
         <div class="review-field"><span class="field-label">Cheque/DD/UTR No.</span><span>${data['cheque-no'] || ''}</span></div>
       </div>
+
       <div class="review-section">
-        <p class="subsection-title">Application Source</p>
+        <div class="review-section-header">
+          <p class="subsection-title" style="margin-bottom:0;">Application Source</p>
+          <button type="button" class="review-edit-btn" onclick="KonnarkForm.showStep(5)">✏️ Edit</button>
+        </div>
         <div class="review-field"><span class="field-label">Source</span><span>${Array.isArray(data['app-source']) ? data['app-source'].join(', ') : (data['app-source'] || '')}</span></div>
         <div class="review-field"><span class="field-label">Referred by</span><span>${data['referred-by'] || ''}</span></div>
       </div>
+
       <div class="review-section">
-        <p class="subsection-title">KYC Attachments</p>
+        <div class="review-section-header">
+          <p class="subsection-title" style="margin-bottom:0;">KYC Attachments</p>
+          <button type="button" class="review-edit-btn" onclick="KonnarkForm.showStep(6)">✏️ Edit</button>
+        </div>
         <div class="review-field"><span class="field-label">Aadhaar Card</span><span>${hasAadhaar ? '✓ Attached' : 'Not Attached'}</span></div>
         <div class="review-field"><span class="field-label">PAN Card</span><span>${hasPAN ? '✓ Attached' : 'Not Attached'}</span></div>
       </div>
-      <div class="review-section">
-        <p class="subsection-title">Cost Sheet &amp; Deal Summary</p>
+
+      <div class="review-section" style="border: 1px solid rgba(201,169,110,0.3); border-radius: 8px; padding: 0.85rem; background: rgba(201,169,110,0.04);">
+        <div class="review-section-header">
+          <p class="subsection-title" style="margin-bottom:0;color:#C9A96E;font-weight:700;">💰 Cost Sheet &amp; Deal Summary</p>
+          <button type="button" class="review-edit-btn" style="background:#C9A96E;color:#0a0f1e;font-weight:700;" onclick="KonnarkForm.showStep(7)">✏️ Edit / Fill</button>
+        </div>
         <div class="review-field"><span class="field-label">Unit No.</span><span>${data['cs-unit-no'] || data['flat-no'] || '—'}</span></div>
         <div class="review-field"><span class="field-label">Configuration</span><span>${data['cs-configuration'] || '—'}</span></div>
         <div class="review-field"><span class="field-label">Usable Area</span><span>${data['cs-usable-area'] ? data['cs-usable-area'] + ' sq.ft.' : '—'}</span></div>
-        <div class="review-field"><span class="field-label">Flat Cost</span><span>₹ ${data['cs-flat-cost'] || '—'}</span></div>
-        <div class="review-field"><span class="field-label">Agreement Value</span><span>₹ ${data['cs-agreement-value'] || '—'}</span></div>
-        <div class="review-field"><span class="field-label">Amount Agreed</span><span>₹ ${data['deal-amount-agreed'] || data['cs-agreement-value'] || '—'}</span></div>
-        <div class="review-field"><span class="field-label">Parking</span><span>${data['deal-parking'] || data['cs-parking'] || '—'}</span></div>
-        <div class="review-field"><span class="field-label">Maintenance</span><span>${data['deal-maintenance'] || '—'}</span></div>
+        <div class="review-field"><span class="field-label">Flat Cost</span><span>${data['cs-flat-cost'] ? '₹ ' + data['cs-flat-cost'] : '—'}</span></div>
+        <div class="review-field"><span class="field-label">Agreement Value</span><span>${data['cs-agreement-value'] ? '₹ ' + data['cs-agreement-value'] : '—'}</span></div>
+        <div class="review-field"><span class="field-label">Amount Agreed</span><span style="font-weight:700;color:#C9A96E;">${data['deal-amount-agreed'] ? '₹ ' + data['deal-amount-agreed'] : (data['cs-agreement-value'] ? '₹ ' + data['cs-agreement-value'] : '—')}</span></div>
+        <div class="review-field"><span class="field-label">Parking Terms</span><span>${data['deal-parking'] || data['cs-parking'] || '—'}</span></div>
+        <div class="review-field"><span class="field-label">Maintenance Terms</span><span>${data['deal-maintenance'] || '—'}</span></div>
+        <div class="review-field"><span class="field-label">Payment Terms</span><span>${data['deal-payment-terms'] || '—'}</span></div>
       </div>
     `;
   }

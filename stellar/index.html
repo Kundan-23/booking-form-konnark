@@ -4,9 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Konnark Stellar Digital Booking Form — Fill and generate your booking form digitally.">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Konnark Stellar — Booking Form</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../shared/style.css">
+  <link rel="stylesheet" href="../shared/style.css?v=2.2">
   <style>
     .project-badge { background: #C9A96E; color: #0a0f1e; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; white-space: nowrap; display: inline-block; flex-shrink: 0; }
     .project-name-header { font-family: 'Playfair Display', serif; color: #C9A96E; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; flex-shrink: 0; }
@@ -60,6 +63,19 @@
   <div class="progress-bar-container">
     <div class="progress-bar-fill" id="progress-fill" style="width:0%;"></div>
   </div>
+
+  <!-- Interactive Stepper Navigation Bar -->
+  <nav class="step-nav-bar" id="step-nav-bar" aria-label="Form steps">
+    <button type="button" class="step-nav-pill active" data-nav-step="0">1. Applicants</button>
+    <button type="button" class="step-nav-pill" data-nav-step="1">2. Unit</button>
+    <button type="button" class="step-nav-pill" data-nav-step="2">3. Type</button>
+    <button type="button" class="step-nav-pill" data-nav-step="3">4. Purpose</button>
+    <button type="button" class="step-nav-pill" data-nav-step="4">5. Payment</button>
+    <button type="button" class="step-nav-pill" data-nav-step="5">6. Source</button>
+    <button type="button" class="step-nav-pill" data-nav-step="6">7. KYC</button>
+    <button type="button" class="step-nav-pill deal-pill" data-nav-step="7">8. 💰 Cost &amp; Deal</button>
+    <button type="button" class="step-nav-pill" data-nav-step="8">9. Review &amp; PDF</button>
+  </nav>
 
   <!-- ═══════════════════════════════════════════════════ -->
   <!-- STEP 1 (data-step 0) — Primary Applicant Details   -->
@@ -614,6 +630,11 @@
   <div class="form-step" data-step="7">
     <div class="step-title"><span class="step-badge">8</span>Cost Sheet &amp; Deal Details</div>
 
+    <div class="info-box" style="margin: 0.5rem 1rem 1rem; background: rgba(201,169,110,0.12); border-color: #C9A96E;">
+      <strong style="color:#C9A96E; display:block; margin-bottom:4px; font-size:0.85rem;">📊 Commercial Cost Sheet &amp; Deal Terms</strong>
+      <span style="font-size:0.78rem; color:#d0d7de;">The numbers and terms entered below will generate the official <strong>Cost Sheet (Page 7)</strong> and <strong>Deal Sheet (Page 8)</strong> in the downloaded PDF.</span>
+    </div>
+
     <div class="form-card">
       <p class="subsection-title">Property &amp; Client Details</p>
       <div class="field-row">
@@ -778,11 +799,11 @@
   <script>
     const PROJECT_CONFIG = null;
   </script>
-  <script src="../shared/config.js"></script>
+  <script src="../shared/config.js?v=2.2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js"></script>
-  <script src="../shared/pdf-generator.js"></script>
-  <script src="../shared/form-engine.js"></script>
+  <script src="../shared/pdf-generator.js?v=2.2"></script>
+  <script src="../shared/form-engine.js?v=2.2"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       KonnarkForm.init(KONNARK_CONFIGS.stellar);
