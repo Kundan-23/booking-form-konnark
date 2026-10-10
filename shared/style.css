@@ -1534,3 +1534,110 @@ input[type="number"] {
   background: rgba(201, 169, 110, 0.18);
 }
 
+/* ── Digital / Manual Customer Signature Styles ── */
+.signature-card {
+  border: 1px solid rgba(201, 169, 110, 0.35);
+  background: var(--color-card-elevated);
+}
+.sig-mode-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+@media (max-width: 600px) {
+  .sig-mode-selector {
+    grid-template-columns: 1fr;
+  }
+}
+.sig-mode-option {
+  position: relative;
+  cursor: pointer;
+  display: block;
+}
+.sig-mode-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.sig-mode-content {
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  background: rgba(255, 255, 255, 0.02);
+  transition: var(--transition);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.sig-mode-option:hover .sig-mode-content {
+  border-color: rgba(201, 169, 110, 0.4);
+  background: rgba(201, 169, 110, 0.04);
+}
+.sig-mode-option input[type="radio"]:checked + .sig-mode-content {
+  border-color: var(--color-gold);
+  background: rgba(201, 169, 110, 0.1);
+  box-shadow: 0 0 15px rgba(201, 169, 110, 0.15);
+}
+.sig-mode-icon {
+  font-size: 1.4rem;
+  margin-bottom: 0.35rem;
+}
+.sig-mode-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+.sig-mode-option input[type="radio"]:checked + .sig-mode-content .sig-mode-title {
+  color: var(--color-gold);
+}
+.sig-mode-desc {
+  font-size: 0.73rem;
+  color: var(--color-text-muted);
+  line-height: 1.35;
+}
+.sig-pad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.sig-canvas-wrap {
+  position: relative;
+  background: #ffffff;
+  border: 2px dashed rgba(201, 169, 110, 0.6);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  touch-action: none;
+  cursor: crosshair;
+  height: 160px;
+}
+.sig-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.sig-canvas-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #718096;
+  font-size: 0.88rem;
+  font-weight: 500;
+  pointer-events: none;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+.sig-status-text {
+  font-size: 0.74rem;
+  color: var(--color-gold-light);
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+

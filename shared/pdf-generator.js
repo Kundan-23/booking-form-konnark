@@ -363,8 +363,31 @@ const KonnarkPDF = (function () {
     };
   }
 
-  /** Single signature line with label below */
-  function sigBlock(label) {
+  /** Single signature line with optional digital signature image stamped above */
+  function sigBlock(label, sigImage) {
+    if (sigImage) {
+      return {
+        stack: [
+          {
+            image: sigImage,
+            width: 100,
+            height: 26,
+            alignment: 'center',
+            margin: [0, 0, 0, 1]
+          },
+          {
+            canvas: [{
+              type: 'line',
+              x1: 0, y1: 0,
+              x2: 140, y2: 0,
+              lineWidth: 0.5, lineColor: '#000'
+            }]
+          },
+          { text: label, style: 'sigLabel', alignment: 'center', margin: [0, 2, 0, 0] }
+        ],
+        width: 140
+      };
+    }
     return {
       stack: [
         {
@@ -526,6 +549,13 @@ const KonnarkPDF = (function () {
       fieldW('Aadhar No.:', data['co2-aadhaar'], 'auto', 140),
       fieldW('Mobile No.:', data['co2-mobile'], 'auto', 140),
       fieldW('Email ID:', data['co2-email'], 'auto', 160),
+      {
+        columns: [
+          { width: '*', text: '' },
+          sigBlock('Signature of Applicant', data.applicantSignature)
+        ],
+        margin: [0, 16, 0, 0]
+      }
     ];
   }
 
@@ -687,6 +717,13 @@ const KonnarkPDF = (function () {
       {
         text: [{ text: 'IFSC Code: ', style: 'bankLabel' }, { text: bank.ifsc, bold: true, fontSize: 9 }],
         margin: [0, 0, 0, 2]
+      },
+      {
+        columns: [
+          { width: '*', text: '' },
+          sigBlock('Signature of Applicant', data.applicantSignature)
+        ],
+        margin: [0, 14, 0, 0]
       }
     ];
   }
@@ -726,7 +763,19 @@ const KonnarkPDF = (function () {
         style: 'bodyText',
         margin: [0, 0, 0, 6]
       },
-      fieldW('Signature of Primary Applicant:', '', 'auto', 160),
+      data.applicantSignature ? {
+        columns: [
+          { text: 'Signature of Primary Applicant:', style: 'fieldLabel', width: 'auto', margin: [0, 8, 4, 0] },
+          {
+            stack: [
+              { image: data.applicantSignature, width: 90, height: 22, alignment: 'center', margin: [0, 0, 0, 1] },
+              { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 150, y2: 0, lineWidth: 0.5, lineColor: '#000' }] }
+            ],
+            width: 150
+          }
+        ],
+        margin: [0, 1, 0, 3]
+      } : fieldW('Signature of Primary Applicant:', '', 'auto', 160),
       { text: 'Date: __ / __ / ______          Time: ______', style: 'fieldLabel', margin: [0, 2, 0, 4] },
       fieldW('Signature of Channel Partner (if applicable):', '', 'auto', 100),
       // Received by — Sales Manager 1
@@ -787,7 +836,7 @@ const KonnarkPDF = (function () {
           { text: 'I accept to the terms and conditions:', style: 'subHead', width: 'auto', margin: [0, 15, 10, 0] },
           sigBlock('Sales Executive'),
           { width: 20, text: '' },
-          sigBlock('Applicant')
+          sigBlock('Applicant', data.applicantSignature)
         ]
       },
       // Confirmed by — centered
@@ -1174,16 +1223,39 @@ const KonnarkPDF = (function () {
       },
       // Signature lines
       {
-        canvas: [{ type: 'line', x1: 0, y1: 0, x2: 495, y2: 0, lineWidth: 0.8, lineColor: '#000000' }],
-        margin: [0, 0, 0, 24]
-      },
-      {
         columns: [
-          { text: 'Sales Manager Signature', fontSize: 8, bold: true, alignment: 'left' },
-          { text: 'Date', fontSize: 8, bold: true, alignment: 'center' },
-          { text: 'Customer Signature', fontSize: 8, bold: true, alignment: 'right' }
+          {
+            width: 150,
+            stack: [
+              { text: ' ', fontSize: 18 },
+              { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 140, y2: 0, lineWidth: 0.8, lineColor: '#000000' }] },
+              { text: 'Sales Manager Signature', fontSize: 8, bold: true, alignment: 'center', margin: [0, 3, 0, 0] }
+            ]
+          },
+          {
+            width: '*',
+            stack: [
+              { text: formDate || '', fontSize: 8.5, alignment: 'center', margin: [0, 10, 0, 2] },
+              { canvas: [{ type: 'line', x1: 20, y1: 0, x2: 100, y2: 0, lineWidth: 0.8, lineColor: '#000000' }] },
+              { text: 'Date', fontSize: 8, bold: true, alignment: 'center', margin: [0, 3, 0, 0] }
+            ]
+          },
+          {
+            width: 150,
+            stack: [
+              data.applicantSignature ? {
+                image: data.applicantSignature,
+                width: 100,
+                height: 24,
+                alignment: 'center',
+                margin: [0, 0, 0, 1]
+              } : { text: ' ', fontSize: 18 },
+              { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 140, y2: 0, lineWidth: 0.8, lineColor: '#000000' }] },
+              { text: 'Customer Signature', fontSize: 8, bold: true, alignment: 'center', margin: [0, 3, 0, 0] }
+            ]
+          }
         ],
-        margin: [4, 0, 4, 6]
+        margin: [4, 16, 4, 6]
       }
     ];
 

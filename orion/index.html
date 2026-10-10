@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0">
   <title>Konnark Orion — Booking Form</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../shared/style.css?v=2.3">
+  <link rel="stylesheet" href="../shared/style.css?v=2.4">
   <style>
     .project-badge { background: #C9A96E; color: #0a0f1e; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; white-space: nowrap; display: inline-block; flex-shrink: 0; }
     .project-name-header { font-family: 'Playfair Display', serif; color: #C9A96E; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; flex-shrink: 0; }
@@ -704,6 +704,47 @@
       </div>
     </div>
 
+    <!-- Customer Signature Option Card -->
+    <div class="form-card form-card--elevated signature-card" style="margin-bottom:1rem;">
+      <p class="subsection-title" style="margin-bottom:0.35rem;color:#C9A96E;font-size:0.85rem;font-weight:700;">✍️ Customer Signature</p>
+      <div style="font-size:0.76rem;color:#8895aa;margin-bottom:0.75rem;">
+        Choose signing method. Digital signature is automatically stamped on all required PDF pages (Applicant details, Payment details, Declaration, T&amp;C, and Deal Confirmation Sheet).
+      </div>
+      <div class="sig-mode-selector">
+        <label class="sig-mode-option">
+          <input type="radio" name="sig-mode" value="manual" checked>
+          <div class="sig-mode-content">
+            <div class="sig-mode-icon">📝</div>
+            <div class="sig-mode-title">Manual Signature</div>
+            <div class="sig-mode-desc">Leave blank signature line on PDF to sign physically with pen after printing</div>
+          </div>
+        </label>
+        <label class="sig-mode-option">
+          <input type="radio" name="sig-mode" value="digital">
+          <div class="sig-mode-content">
+            <div class="sig-mode-icon">✍️</div>
+            <div class="sig-mode-title">Digital Signature</div>
+            <div class="sig-mode-desc">Sign on screen now (touch or mouse) to stamp signature digitally onto all pages</div>
+          </div>
+        </label>
+      </div>
+
+      <!-- Signature Pad Area (shown when digital is selected) -->
+      <div id="digital-sig-container" style="display:none;margin-top:1rem;">
+        <div class="sig-pad-header">
+          <span style="font-size:0.8rem;font-weight:600;color:#F0EDE8;">Draw your signature inside the box:</span>
+          <button type="button" id="btn-clear-sig" class="btn btn-secondary" style="padding:0.3rem 0.65rem;font-size:0.75rem;">↺ Clear / Erase</button>
+        </div>
+        <div class="sig-canvas-wrap">
+          <canvas id="signature-canvas" width="600" height="160" class="sig-canvas"></canvas>
+          <div class="sig-canvas-placeholder" id="sig-canvas-placeholder">✍️ Draw signature here with finger or mouse</div>
+        </div>
+        <div class="sig-status-text" id="sig-status-text">
+          ✓ Digital signature will appear on Applicant details (p.2), Payment details (p.3), Declaration (p.4), Terms &amp; Conditions (p.5), and Deal Confirmation Sheet.
+        </div>
+      </div>
+    </div>
+
     <div style="padding:0 1rem 0.5rem;">
       <button id="btn-generate-pdf" class="btn btn-primary" style="width:100%;justify-content:center;font-size:1rem;padding:1rem;">
         ⬇ Generate &amp; Download PDF
@@ -730,11 +771,11 @@
   <script>
     const PROJECT_CONFIG = null;
   </script>
-  <script src="../shared/config.js?v=2.3"></script>
+  <script src="../shared/config.js?v=2.4"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js"></script>
-  <script src="../shared/pdf-generator.js?v=2.3"></script>
-  <script src="../shared/form-engine.js?v=2.3"></script>
+  <script src="../shared/pdf-generator.js?v=2.4"></script>
+  <script src="../shared/form-engine.js?v=2.4"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       KonnarkForm.init(KONNARK_CONFIGS.orion);

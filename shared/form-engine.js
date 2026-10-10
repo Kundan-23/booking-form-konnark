@@ -57,6 +57,9 @@ const KonnarkForm = (function() {
     // Setup cost sheet calculation listeners
     setupCostSheetCalculations();
 
+    // Setup signature pad handlers
+    setupSignaturePad();
+
     // Setup auto-save
     setupAutoSave();
 
@@ -245,6 +248,127 @@ const KonnarkForm = (function() {
     }
   }
 
+  function setupSignaturePad() {
+    const sigModeRadios = document.querySelectorAll('input[name="sig-mode"]');
+    const container = document.getElementById('digital-sig-container');
+    const canvas = document.getElementById('signature-canvas');
+    const btnClear = document.getElementById('btn-clear-sig');
+    const placeholder = document.getElementById('sig-canvas-placeholder');
+
+    if (!canvas) return;
+
+    let ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    let hasDrawn = false;
+
+    function resizeCanvas(preserve) {
+      let saved = null;
+      if (preserve && (hasDrawn || window._applicantSignatureURL)) {
+        try { saved = canvas.toDataURL('image/png'); } catch (e) {}
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      const cssWidth = rect.width > 0 ? rect.width : 500;
+      const cssHeight = rect.height > 0 ? rect.height : 160;
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = Math.round(cssWidth * dpr);
+      canvas.height = Math.round(cssHeight * dpr);
+
+      ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#0a192f';
+
+      const restoreSrc = saved || window._applicantSignatureURL;
+      if (restoreSrc) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, cssWidth, cssHeight);
+          hasDrawn = true;
+          if (placeholder) placeholder.style.display = 'none';
+        };
+        img.src = restoreSrc;
+      }
+    }
+
+    sigModeRadios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (radio.value === 'digital' && radio.checked) {
+          if (container) container.style.display = 'block';
+          setTimeout(() => resizeCanvas(true), 60);
+        } else if (radio.value === 'manual' && radio.checked) {
+          if (container) container.style.display = 'none';
+        }
+        saveToStorage();
+        if (currentStep === totalSteps) populateReview();
+      });
+    });
+
+    function getPointerPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+
+    canvas.addEventListener('pointerdown', e => {
+      isDrawing = true;
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+      const pos = getPointerPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      if (placeholder) placeholder.style.display = 'none';
+    });
+
+    canvas.addEventListener('pointermove', e => {
+      if (!isDrawing) return;
+      const pos = getPointerPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      hasDrawn = true;
+    });
+
+    function stopDrawing(e) {
+      if (!isDrawing) return;
+      isDrawing = false;
+      if (e && e.pointerId) {
+        try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+      if (hasDrawn) {
+        window._applicantSignatureURL = canvas.toDataURL('image/png');
+        saveToStorage();
+        if (currentStep === totalSteps) populateReview();
+      }
+    }
+
+    canvas.addEventListener('pointerup', stopDrawing);
+    canvas.addEventListener('pointercancel', stopDrawing);
+    canvas.addEventListener('pointerleave', stopDrawing);
+
+    if (btnClear) {
+      btnClear.addEventListener('click', () => {
+        const rect = canvas.getBoundingClientRect();
+        ctx.clearRect(0, 0, rect.width || canvas.width, rect.height || canvas.height);
+        hasDrawn = false;
+        window._applicantSignatureURL = null;
+        if (placeholder) placeholder.style.display = 'flex';
+        saveToStorage();
+        if (currentStep === totalSteps) populateReview();
+        showToast('Signature erased. You can draw again.', 'info');
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      if (container && container.style.display !== 'none') {
+        resizeCanvas(true);
+      }
+    });
+  }
+
   function setupAutoSave() {
     document.querySelectorAll('input, select, textarea').forEach(el => {
       el.addEventListener('change', () => saveToStorage());
@@ -292,6 +416,14 @@ const KonnarkForm = (function() {
 
     if (window._aadhaarImageURL) data.aadhaarImageURL = window._aadhaarImageURL;
     if (window._panImageURL) data.panImageURL = window._panImageURL;
+
+    const sigMode = document.querySelector('input[name="sig-mode"]:checked')?.value || 'manual';
+    data.sigMode = sigMode;
+    if (sigMode === 'digital' && window._applicantSignatureURL) {
+      data.applicantSignature = window._applicantSignatureURL;
+    } else {
+      data.applicantSignature = null;
+    }
 
     console.log('[collectAllFormData]', data);
     return data;
@@ -343,6 +475,20 @@ const KonnarkForm = (function() {
       const stat = document.getElementById('upload-pan-status') || document.getElementById('ocr-pan-status');
       if (prev) { prev.src = formData.panImageURL; prev.style.display = 'block'; }
       if (stat) { stat.textContent = '✓ PAN Card attached'; stat.className = 'ocr-status success'; }
+    }
+
+    if (formData.sigMode) {
+      const radio = document.querySelector(`input[name="sig-mode"][value="${formData.sigMode}"]`);
+      if (radio) {
+        radio.checked = true;
+        const container = document.getElementById('digital-sig-container');
+        if (container) container.style.display = formData.sigMode === 'digital' ? 'block' : 'none';
+      }
+    }
+    if (formData.applicantSignature) {
+      window._applicantSignatureURL = formData.applicantSignature;
+      const ph = document.getElementById('sig-canvas-placeholder');
+      if (ph) ph.style.display = 'none';
     }
   }
 
@@ -425,7 +571,40 @@ const KonnarkForm = (function() {
       }
     }
 
-    if (step === totalSteps) populateReview();
+    if (step === totalSteps) {
+      populateReview();
+      const digitalRadio = document.querySelector('input[name="sig-mode"][value="digital"]');
+      if (digitalRadio && digitalRadio.checked) {
+        const container = document.getElementById('digital-sig-container');
+        if (container) container.style.display = 'block';
+        setTimeout(() => {
+          const canvas = document.getElementById('signature-canvas');
+          if (canvas) {
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width > 0) {
+              const dpr = window.devicePixelRatio || 1;
+              canvas.width = Math.round(rect.width * dpr);
+              canvas.height = Math.round(rect.height * dpr);
+              const ctx = canvas.getContext('2d');
+              ctx.scale(dpr, dpr);
+              ctx.lineWidth = 2.5;
+              ctx.lineCap = 'round';
+              ctx.lineJoin = 'round';
+              ctx.strokeStyle = '#0a192f';
+              if (window._applicantSignatureURL) {
+                const img = new Image();
+                img.onload = () => {
+                  ctx.drawImage(img, 0, 0, rect.width, rect.height);
+                  const ph = document.getElementById('sig-canvas-placeholder');
+                  if (ph) ph.style.display = 'none';
+                };
+                img.src = window._applicantSignatureURL;
+              }
+            }
+          }
+        }, 60);
+      }
+    }
 
     updateStepDisplay();
   }
@@ -554,6 +733,22 @@ const KonnarkForm = (function() {
         <div class="review-field"><span class="field-label">Society Formation (Excl. at Possession)</span><span>${data['cs-society-formation'] || data['deal-society-formation'] ? (String(data['cs-society-formation'] || data['deal-society-formation']).startsWith('₹') ? (data['cs-society-formation'] || data['deal-society-formation']) : '₹ ' + (data['cs-society-formation'] || data['deal-society-formation'])) : '—'}</span></div>
         <div class="review-field"><span class="field-label">Payment Terms / Remarks</span><span>${data['deal-payment-terms'] || '—'}</span></div>
       </div>
+
+      <div class="review-section">
+        <div class="review-section-header">
+          <p class="subsection-title" style="margin-bottom:0;">Signature Method</p>
+        </div>
+        <div class="review-field">
+          <span class="field-label">Selected Mode</span>
+          <span>${data.sigMode === 'digital' ? (data.applicantSignature ? '✍️ Digital Signature (Signed & Ready)' : '✍️ Digital Signature (Pending - Sign Below)') : '📝 Manual Signature (Blank line on printed PDF)'}</span>
+        </div>
+        ${data.sigMode === 'digital' && data.applicantSignature ? `
+          <div style="margin-top:0.5rem;display:flex;align-items:center;gap:0.75rem;">
+            <span class="field-label" style="font-size:0.75rem;">Preview:</span>
+            <img src="${data.applicantSignature}" alt="Signature Preview" style="height:32px;border:1px solid #1e2e4a;border-radius:4px;background:#fff;padding:2px 8px;object-fit:contain;">
+          </div>
+        ` : ''}
+      </div>
     `;
   }
 
@@ -585,6 +780,7 @@ const KonnarkForm = (function() {
     try { localStorage.removeItem(`konnark_form_${config.projectId}`); } catch (e) {}
     window._aadhaarImageURL = null;
     window._panImageURL = null;
+    window._applicantSignatureURL = null;
     formData = {};
     formNo = generateFormNo(config.formPrefix);
     formData = { formNo, projectId: config.projectId };
@@ -602,6 +798,18 @@ const KonnarkForm = (function() {
         el.value = '';
       }
     });
+
+    const manualRadio = document.querySelector('input[name="sig-mode"][value="manual"]');
+    if (manualRadio) manualRadio.checked = true;
+    const sigContainer = document.getElementById('digital-sig-container');
+    if (sigContainer) sigContainer.style.display = 'none';
+    const canvas = document.getElementById('signature-canvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    const sigPh = document.getElementById('sig-canvas-placeholder');
+    if (sigPh) sigPh.style.display = 'flex';
 
     document.querySelectorAll('.ocr-preview').forEach(el => { el.src = ''; el.style.display = 'none'; });
     document.querySelectorAll('.ocr-status').forEach(el => { el.textContent = ''; el.className = 'ocr-status'; });
