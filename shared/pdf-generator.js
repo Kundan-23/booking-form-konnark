@@ -408,32 +408,40 @@ const KonnarkPDF = (function () {
   function buildPage1(data, cfg, logoData) {
     const formDate = fdate(data['form-date']);
 
-    // Brand section with logo emblem on left + text on right (matching reference screenshot)
+    // Brand section — properly centered logo emblem, brand name, and enlarged project title
     const brandSection = logoData ? {
-      columns: [
-        { width: '*', text: '' }, // left spacer
+      stack: [
+        { image: logoData, width: 95, alignment: 'center', margin: [0, 0, 0, 18] },
+        { text: 'K O N N A R K', style: 'coverKonnark', alignment: 'center', margin: [0, 0, 0, 8] },
+        { text: cfg.projectTitle, style: 'coverProject', alignment: 'center', margin: [0, 0, 0, 20] },
         {
-          width: 'auto',
-          columns: [
-            { image: logoData, width: 110, margin: [0, 0, 16, 0] },
-            {
-              width: 'auto',
-              stack: [
-                { text: 'K O N N A R K', style: 'coverKonnark', alignment: 'left', margin: [0, 8, 0, 4] },
-                { text: cfg.projectTitle, style: 'coverProject', alignment: 'left' }
-              ]
-            }
-          ]
-        },
-        { width: '*', text: '' } // right spacer
+          canvas: [{
+            type: 'line',
+            x1: 225, y1: 0,
+            x2: 305, y2: 0,
+            lineWidth: 2.5,
+            lineColor: '#C9A96E'
+          }],
+          margin: [0, 0, 0, 36]
+        }
       ],
-      margin: [0, 100, 0, 60]
+      margin: [0, 60, 0, 20]
     } : {
       stack: [
-        { text: 'K O N N A R K', style: 'coverKonnark' },
-        { text: cfg.projectTitle, style: 'coverProject', margin: [0, 6, 0, 70] }
+        { text: 'K O N N A R K', style: 'coverKonnark', alignment: 'center', margin: [0, 0, 0, 8] },
+        { text: cfg.projectTitle, style: 'coverProject', alignment: 'center', margin: [0, 0, 0, 20] },
+        {
+          canvas: [{
+            type: 'line',
+            x1: 225, y1: 0,
+            x2: 305, y2: 0,
+            lineWidth: 2.5,
+            lineColor: '#C9A96E'
+          }],
+          margin: [0, 0, 0, 36]
+        }
       ],
-      margin: [0, 120, 0, 0]
+      margin: [0, 100, 0, 20]
     };
 
     return [
@@ -1102,24 +1110,12 @@ const KonnarkPDF = (function () {
     const paymentSchedule = fv(data['deal-payment-terms']) || 'As per Standard Agreement Milestone Schedule';
 
     const brandHeader = logoData ? {
-      columns: [
-        { width: '*', text: '' },
-        {
-          width: 'auto',
-          columns: [
-            { image: logoData, width: 48, margin: [0, 0, 10, 0] },
-            {
-              width: 'auto',
-              stack: [
-                { text: 'K O N N A R K', fontSize: 13, bold: true, characterSpacing: 4, alignment: 'left', margin: [0, 2, 0, 2] },
-                { text: cfg.projectTitle, fontSize: 24, bold: true, characterSpacing: 2, alignment: 'left' }
-              ]
-            }
-          ]
-        },
-        { width: '*', text: '' }
+      stack: [
+        { image: logoData, width: 36, alignment: 'center', margin: [0, 0, 0, 3] },
+        { text: 'K O N N A R K', fontSize: 13, bold: true, characterSpacing: 4, alignment: 'center', margin: [0, 0, 0, 1] },
+        { text: cfg.projectTitle, fontSize: 24, bold: true, characterSpacing: 2, alignment: 'center' }
       ],
-      margin: [0, 4, 0, 8]
+      margin: [0, 2, 0, 8]
     } : {
       stack: [
         { text: 'K O N N A R K', fontSize: 14, bold: true, characterSpacing: 4, alignment: 'center' },
@@ -1304,8 +1300,8 @@ const KonnarkPDF = (function () {
       termNum:       { fontSize: 7.5, color: '#111', lineHeight: 1.4 },
       termText:      { fontSize: 7.5, color: '#111', lineHeight: 1.4 },
       sigLabel:      { fontSize: 8,   color: '#444', alignment: 'center' },
-      coverKonnark:  { fontSize: 22,  bold: true,  characterSpacing: 6, color: '#000', alignment: 'center' },
-      coverProject:  { fontSize: 50,  bold: true,  color: '#000', alignment: 'center' },
+      coverKonnark:  { fontSize: 28,  bold: true,  characterSpacing: 8, color: '#111111', alignment: 'center' },
+      coverProject:  { fontSize: 62,  bold: true,  characterSpacing: 4, color: '#000000', alignment: 'center' },
       coverBadge:    { fontSize: 16,  bold: true,  color: '#ffffff', alignment: 'center', characterSpacing: 3 },
       coverFooter:   { fontSize: 8,   color: '#333', lineHeight: 1.5, alignment: 'center' },
       docLabel:      { fontSize: 9,   bold: true,  color: '#1C2B4A' }
