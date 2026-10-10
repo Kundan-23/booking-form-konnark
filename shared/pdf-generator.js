@@ -1039,7 +1039,7 @@ const KonnarkPDF = (function () {
     ];
   }
 
-  // ── PAGE 8: Deal Sheet (Deal Confirmation Terms) ─────────────
+  // ── Deal Sheet (Deal Confirmation Terms) ─────────────
   function buildDealSheetPage(data, cfg, logoData) {
     const clientName = fv(data['cs-client-name']) || `${fv(data['primary-title'])} ${fv(data['primary-name'])}`.trim() || 'Customer Name';
     const formDate = fdate(data['form-date']);
@@ -1047,8 +1047,9 @@ const KonnarkPDF = (function () {
     const configVal = fv(data['cs-configuration']) || (Array.isArray(data['typology']) ? data['typology'].join(', ') : fv(data['typology'])) || (cfg.typologyOptions ? cfg.typologyOptions[0] : '');
     const usableCarpet = fv(data['cs-usable-area']);
     const amountAgreed = fv(data['deal-amount-agreed']) || fv(data['cs-agreement-value']) || fv(data['payment-amount']) || '—';
-    const parkingDeal = fv(data['deal-parking']) || fv(data['cs-parking']) || 'Included';
-    const maintenanceDeal = fv(data['deal-maintenance']) || 'Excluding';
+    const parkingStack = fv(data['cs-parking']) || fv(data['deal-parking']) || 'NO';
+    const maintenance1Yr = fv(data['cs-maintenance']) || fv(data['deal-maintenance']) || '—';
+    const societyFormation = fv(data['cs-society-formation']) || fv(data['deal-society-formation']) || '—';
     const paymentSchedule = fv(data['deal-payment-terms']) || 'As per Standard Agreement Milestone Schedule';
 
     const brandHeader = logoData ? {
@@ -1097,15 +1098,19 @@ const KonnarkPDF = (function () {
       ],
       [
         { text: 'AMOUNT AGREED', bold: true, fontSize: 9, fillColor: '#eef2f7', margin: [4, 5, 4, 5] },
-        { text: amountAgreed !== '—' ? `₹ ${amountAgreed}` : '—', bold: true, fontSize: 11, alignment: 'center', color: '#1C2B4A', margin: [4, 5, 4, 5] }
+        { text: amountAgreed !== '—' && !amountAgreed.startsWith('₹') ? `₹ ${amountAgreed}` : amountAgreed, bold: true, fontSize: 11, alignment: 'center', color: '#1C2B4A', margin: [4, 5, 4, 5] }
       ],
       [
-        { text: 'CAR PARKING', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
-        { text: parkingDeal, bold: true, fontSize: 9, alignment: 'center', margin: [4, 4, 4, 4] }
+        { text: 'CAR PARKING IN STACK MECHANISM', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
+        { text: parkingStack, bold: true, fontSize: 9, alignment: 'center', margin: [4, 4, 4, 4] }
       ],
       [
-        { text: 'MAINTENANCE (1 YEAR)', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
-        { text: maintenanceDeal, bold: true, fontSize: 9, alignment: 'center', margin: [4, 4, 4, 4] }
+        { text: 'MAINTENANCE 1 YR (EXCL. AT POSSESSION)', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
+        { text: maintenance1Yr !== '—' && !maintenance1Yr.startsWith('₹') && !isNaN(Number(maintenance1Yr)) ? `₹ ${maintenance1Yr}` : maintenance1Yr, bold: true, fontSize: 9, alignment: 'center', margin: [4, 4, 4, 4] }
+      ],
+      [
+        { text: 'SOCIETY FORMATION (EXCL. AT POSSESSION)', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
+        { text: societyFormation !== '—' && !societyFormation.startsWith('₹') && !isNaN(Number(societyFormation)) ? `₹ ${societyFormation}` : societyFormation, bold: true, fontSize: 9, alignment: 'center', margin: [4, 4, 4, 4] }
       ],
       [
         { text: 'PAYMENT TERMS / SCHEDULE', bold: true, fontSize: 8.5, margin: [4, 4, 4, 4] },
@@ -1261,7 +1266,6 @@ const KonnarkPDF = (function () {
         ...buildPage4(data, cfg),
         ...buildPage5(data, cfg),
         ...buildPageKYC(data),
-        ...buildCostSheetPage(data, cfg, logoData),
         ...buildDealSheetPage(data, cfg, logoData)
       ];
 

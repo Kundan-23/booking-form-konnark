@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0">
   <title>Konnark Stellar — Booking Form</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../shared/style.css?v=2.2">
+  <link rel="stylesheet" href="../shared/style.css?v=2.3">
   <style>
     .project-badge { background: #C9A96E; color: #0a0f1e; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; white-space: nowrap; display: inline-block; flex-shrink: 0; }
     .project-name-header { font-family: 'Playfair Display', serif; color: #C9A96E; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; flex-shrink: 0; }
@@ -73,7 +73,7 @@
     <button type="button" class="step-nav-pill" data-nav-step="4">5. Payment</button>
     <button type="button" class="step-nav-pill" data-nav-step="5">6. Source</button>
     <button type="button" class="step-nav-pill" data-nav-step="6">7. KYC</button>
-    <button type="button" class="step-nav-pill deal-pill" data-nav-step="7">8. 💰 Cost &amp; Deal</button>
+    <button type="button" class="step-nav-pill deal-pill" data-nav-step="7">8. 🤝 Deal Terms</button>
     <button type="button" class="step-nav-pill" data-nav-step="8">9. Review &amp; PDF</button>
   </nav>
 
@@ -625,14 +625,14 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════ -->
-  <!-- STEP 8 (data-step 7) — Cost Sheet & Deal Details   -->
+  <!-- STEP 8 (data-step 7) — Deal Confirmation Terms      -->
   <!-- ═══════════════════════════════════════════════════ -->
   <div class="form-step" data-step="7">
-    <div class="step-title"><span class="step-badge">8</span>Cost Sheet &amp; Deal Details</div>
+    <div class="step-title"><span class="step-badge">8</span>Deal Confirmation Terms</div>
 
     <div class="info-box" style="margin: 0.5rem 1rem 1rem; background: rgba(201,169,110,0.12); border-color: #C9A96E;">
-      <strong style="color:#C9A96E; display:block; margin-bottom:4px; font-size:0.85rem;">📊 Commercial Cost Sheet &amp; Deal Terms</strong>
-      <span style="font-size:0.78rem; color:#d0d7de;">The numbers and terms entered below will generate the official <strong>Cost Sheet (Page 7)</strong> and <strong>Deal Sheet (Page 8)</strong> in the downloaded PDF.</span>
+      <strong style="color:#C9A96E; display:block; margin-bottom:4px; font-size:0.85rem;">🤝 Commercial Deal Confirmation Terms</strong>
+      <span style="font-size:0.78rem; color:#d0d7de;">The details and terms entered below will be generated as the official <strong>Deal Confirmation Sheet</strong> attached to the downloaded PDF.</span>
     </div>
 
     <div class="form-card">
@@ -659,52 +659,12 @@
       </div>
     </div>
 
-    <div class="form-card">
-      <p class="subsection-title">Cost Sheet Breakdown</p>
+    <div class="form-card form-card--elevated">
+      <p class="subsection-title">Commercial Deal Terms</p>
       <div class="field-row">
         <div class="field-group">
-          <label class="field-label" for="cs-apartment-cost">Apartment Cost (₹)</label>
-          <input type="number" id="cs-apartment-cost" data-field="cs-apartment-cost" class="field-input" placeholder="e.g. 2151360">
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="cs-dev-charges">Development Charges (₹)</label>
-          <input type="number" id="cs-dev-charges" data-field="cs-dev-charges" class="field-input" placeholder="e.g. 126000">
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label" for="cs-other-charges">Other Charges (₹)</label>
-          <input type="number" id="cs-other-charges" data-field="cs-other-charges" class="field-input" placeholder="e.g. 125000">
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="cs-flat-cost">Flat Cost (₹)</label>
-          <input type="number" id="cs-flat-cost" data-field="cs-flat-cost" class="field-input" placeholder="e.g. 2402360">
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label" for="cs-stamp-duty">Stamp Duty (₹)</label>
-          <input type="number" id="cs-stamp-duty" data-field="cs-stamp-duty" class="field-input" placeholder="e.g. 144142">
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="cs-registration">Registration Charges (₹)</label>
-          <input type="number" id="cs-registration" data-field="cs-registration" class="field-input" placeholder="e.g. 24024">
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label" for="cs-legal-charges">Legal Charges (₹)</label>
-          <input type="number" id="cs-legal-charges" data-field="cs-legal-charges" class="field-input" placeholder="e.g. 5451">
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="cs-gst">GST (₹)</label>
-          <input type="number" id="cs-gst" data-field="cs-gst" class="field-input" placeholder="e.g. 24024">
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label" for="cs-agreement-value">Agreement Value (₹)</label>
-          <input type="number" id="cs-agreement-value" data-field="cs-agreement-value" class="field-input" placeholder="e.g. 2600000">
+          <label class="field-label required" for="deal-amount-agreed">Amount Agreed (₹)</label>
+          <input type="number" id="deal-amount-agreed" data-field="deal-amount-agreed" class="field-input" placeholder="Agreed Final Amount">
         </div>
         <div class="field-group">
           <label class="field-label" for="cs-parking">Car Parking in Stack Mechanism</label>
@@ -721,38 +681,9 @@
           <input type="text" id="cs-society-formation" data-field="cs-society-formation" class="field-input" placeholder="e.g. 80000">
         </div>
       </div>
-    </div>
-
-    <div class="form-card form-card--elevated">
-      <p class="subsection-title">Deal Confirmation Terms</p>
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label" for="deal-amount-agreed">Amount Agreed (₹)</label>
-          <input type="number" id="deal-amount-agreed" data-field="deal-amount-agreed" class="field-input" placeholder="Agreed Final Amount">
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="deal-parking">Parking Terms</label>
-          <select id="deal-parking" data-field="deal-parking" class="field-input">
-            <option value="Included (Stack Mechanism)">Included (Stack Mechanism)</option>
-            <option value="Included (Type A)">Included (Type A)</option>
-            <option value="Included (Type B)">Included (Type B)</option>
-            <option value="Excluded">Excluded</option>
-            <option value="No Parking">No Parking</option>
-          </select>
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field-group">
-          <label class="field-label" for="deal-maintenance">Maintenance Terms</label>
-          <select id="deal-maintenance" data-field="deal-maintenance" class="field-input">
-            <option value="Excluding (Payable at Possession)">Excluding (Payable at Possession)</option>
-            <option value="Included in Package">Included in Package</option>
-          </select>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="deal-payment-terms">Payment Terms / Remarks</label>
-          <input type="text" id="deal-payment-terms" data-field="deal-payment-terms" class="field-input" placeholder="e.g. 10% on Booking, Balance as per Slab">
-        </div>
+      <div class="field-group">
+        <label class="field-label" for="deal-payment-terms">Payment Terms / Remarks</label>
+        <input type="text" id="deal-payment-terms" data-field="deal-payment-terms" class="field-input" placeholder="e.g. 10% on Booking, Balance as per Slab">
       </div>
     </div>
   </div>
@@ -799,11 +730,11 @@
   <script>
     const PROJECT_CONFIG = null;
   </script>
-  <script src="../shared/config.js?v=2.2"></script>
+  <script src="../shared/config.js?v=2.3"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js"></script>
-  <script src="../shared/pdf-generator.js?v=2.2"></script>
-  <script src="../shared/form-engine.js?v=2.2"></script>
+  <script src="../shared/pdf-generator.js?v=2.3"></script>
+  <script src="../shared/form-engine.js?v=2.3"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       KonnarkForm.init(KONNARK_CONFIGS.stellar);

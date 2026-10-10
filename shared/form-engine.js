@@ -230,31 +230,13 @@ const KonnarkForm = (function() {
   }
 
   function setupCostSheetCalculations() {
-    const aptInput = document.getElementById('cs-apartment-cost');
-    const devInput = document.getElementById('cs-dev-charges');
-    const otherInput = document.getElementById('cs-other-charges');
-    const flatCostInput = document.getElementById('cs-flat-cost');
-    const agreeInput = document.getElementById('cs-agreement-value');
+    const payAmtInput = document.getElementById('payment-amount');
     const dealAmtInput = document.getElementById('deal-amount-agreed');
 
-    function updateFlatCost() {
-      if (!flatCostInput) return;
-      const apt = parseFloat(aptInput?.value) || 0;
-      const dev = parseFloat(devInput?.value) || 0;
-      const other = parseFloat(otherInput?.value) || 0;
-      if (apt > 0 || dev > 0 || other > 0) {
-        flatCostInput.value = (apt + dev + other).toString();
-      }
-    }
-
-    [aptInput, devInput, otherInput].forEach(inp => {
-      if (inp) inp.addEventListener('input', updateFlatCost);
-    });
-
-    if (agreeInput && dealAmtInput) {
-      agreeInput.addEventListener('input', () => {
+    if (payAmtInput && dealAmtInput) {
+      payAmtInput.addEventListener('input', () => {
         if (!dealAmtInput.value || dealAmtInput.dataset.manual !== 'true') {
-          dealAmtInput.value = agreeInput.value;
+          dealAmtInput.value = payAmtInput.value;
         }
       });
       dealAmtInput.addEventListener('input', () => {
@@ -438,9 +420,8 @@ const KonnarkForm = (function() {
       }
       const dealAmtEl = document.getElementById('deal-amount-agreed');
       if (dealAmtEl && !dealAmtEl.value.trim()) {
-        const csAgree = document.getElementById('cs-agreement-value')?.value || '';
         const payAmt = document.getElementById('payment-amount')?.value || '';
-        dealAmtEl.value = csAgree || payAmt;
+        dealAmtEl.value = payAmt;
       }
     }
 
@@ -468,7 +449,7 @@ const KonnarkForm = (function() {
     if (btnNext) {
       btnNext.style.display = isReview ? 'none' : 'flex';
       if (currentStep === 6) {
-        btnNext.textContent = 'Next: Cost Sheet & Deal →';
+        btnNext.textContent = 'Next: Deal Confirmation Terms →';
       } else if (currentStep === 7) {
         btnNext.textContent = 'Next: Review & Generate PDF →';
       } else {
@@ -484,14 +465,14 @@ const KonnarkForm = (function() {
 
     const hasAadhaar = !!window._aadhaarImageURL;
     const hasPAN = !!window._panImageURL;
-    const hasCostSheetData = !!(data['cs-apartment-cost'] || data['cs-agreement-value'] || data['deal-amount-agreed']);
+    const hasDealData = !!(data['deal-amount-agreed'] || data['payment-amount']);
 
     container.innerHTML = `
-      ${!hasCostSheetData ? `
+      ${!hasDealData ? `
         <div class="cost-sheet-alert-banner" onclick="KonnarkForm.showStep(7)">
           <div>
-            <div style="font-weight:700;font-size:0.85rem;color:#C9A96E;">⚠️ Cost Sheet &amp; Deal values are blank!</div>
-            <div style="font-size:0.75rem;color:#d0d7de;margin-top:2px;">Tap here to enter apartment cost, charges, and deal terms in Step 8 before downloading PDF.</div>
+            <div style="font-weight:700;font-size:0.85rem;color:#C9A96E;">⚠️ Deal Confirmation Terms are blank!</div>
+            <div style="font-size:0.75rem;color:#d0d7de;margin-top:2px;">Tap here to enter agreed amount, parking &amp; maintenance terms in Step 8 before downloading PDF.</div>
           </div>
           <button type="button" class="btn btn-primary" style="font-size:0.75rem;padding:0.4rem 0.8rem;white-space:nowrap;">Fill Now →</button>
         </div>
@@ -561,18 +542,17 @@ const KonnarkForm = (function() {
 
       <div class="review-section" style="border: 1px solid rgba(201,169,110,0.3); border-radius: 8px; padding: 0.85rem; background: rgba(201,169,110,0.04);">
         <div class="review-section-header">
-          <p class="subsection-title" style="margin-bottom:0;color:#C9A96E;font-weight:700;">💰 Cost Sheet &amp; Deal Summary</p>
-          <button type="button" class="review-edit-btn" style="background:#C9A96E;color:#0a0f1e;font-weight:700;" onclick="KonnarkForm.showStep(7)">✏️ Edit / Fill</button>
+          <p class="subsection-title" style="margin-bottom:0;color:#C9A96E;font-weight:700;">🤝 Deal Confirmation Terms</p>
+          <button type="button" class="review-edit-btn" style="background:#C9A96E;color:#0a0f1e;font-weight:700;" onclick="KonnarkForm.showStep(7)">✏️ Edit Deal</button>
         </div>
         <div class="review-field"><span class="field-label">Unit No.</span><span>${data['cs-unit-no'] || data['flat-no'] || '—'}</span></div>
         <div class="review-field"><span class="field-label">Configuration</span><span>${data['cs-configuration'] || '—'}</span></div>
         <div class="review-field"><span class="field-label">Usable Area</span><span>${data['cs-usable-area'] ? data['cs-usable-area'] + ' sq.ft.' : '—'}</span></div>
-        <div class="review-field"><span class="field-label">Flat Cost</span><span>${data['cs-flat-cost'] ? '₹ ' + data['cs-flat-cost'] : '—'}</span></div>
-        <div class="review-field"><span class="field-label">Agreement Value</span><span>${data['cs-agreement-value'] ? '₹ ' + data['cs-agreement-value'] : '—'}</span></div>
-        <div class="review-field"><span class="field-label">Amount Agreed</span><span style="font-weight:700;color:#C9A96E;">${data['deal-amount-agreed'] ? '₹ ' + data['deal-amount-agreed'] : (data['cs-agreement-value'] ? '₹ ' + data['cs-agreement-value'] : '—')}</span></div>
-        <div class="review-field"><span class="field-label">Parking Terms</span><span>${data['deal-parking'] || data['cs-parking'] || '—'}</span></div>
-        <div class="review-field"><span class="field-label">Maintenance Terms</span><span>${data['deal-maintenance'] || '—'}</span></div>
-        <div class="review-field"><span class="field-label">Payment Terms</span><span>${data['deal-payment-terms'] || '—'}</span></div>
+        <div class="review-field"><span class="field-label">Amount Agreed</span><span style="font-weight:700;color:#C9A96E;">${data['deal-amount-agreed'] ? '₹ ' + data['deal-amount-agreed'] : (data['payment-amount'] ? '₹ ' + data['payment-amount'] : '—')}</span></div>
+        <div class="review-field"><span class="field-label">Car Parking in Stack Mechanism</span><span>${data['cs-parking'] || data['deal-parking'] || '—'}</span></div>
+        <div class="review-field"><span class="field-label">Maintenance 1 Yr (Excl. at Possession)</span><span>${data['cs-maintenance'] || data['deal-maintenance'] ? (String(data['cs-maintenance'] || data['deal-maintenance']).startsWith('₹') ? (data['cs-maintenance'] || data['deal-maintenance']) : '₹ ' + (data['cs-maintenance'] || data['deal-maintenance'])) : '—'}</span></div>
+        <div class="review-field"><span class="field-label">Society Formation (Excl. at Possession)</span><span>${data['cs-society-formation'] || data['deal-society-formation'] ? (String(data['cs-society-formation'] || data['deal-society-formation']).startsWith('₹') ? (data['cs-society-formation'] || data['deal-society-formation']) : '₹ ' + (data['cs-society-formation'] || data['deal-society-formation'])) : '—'}</span></div>
+        <div class="review-field"><span class="field-label">Payment Terms / Remarks</span><span>${data['deal-payment-terms'] || '—'}</span></div>
       </div>
     `;
   }
